@@ -5,13 +5,14 @@ import (
 	"sync"
 	"time"
 
-	k8s "github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
+
+	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 type deploymentActivation struct {

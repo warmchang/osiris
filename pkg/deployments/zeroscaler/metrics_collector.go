@@ -9,14 +9,16 @@ import (
 	"sync"
 	"time"
 
-	k8s "github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/deislabs/osiris/pkg/metrics"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	k8s_types "k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
+
+	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion/osiris/pkg/metrics"
 )
 
 const (
@@ -164,7 +166,7 @@ func (m *metricsCollector) collectMetrics(ctx context.Context) {
 			}
 			timer.Stop()
 			if !mustNotDecide && totalRequestCount == lastTotalRequestCount {
-				m.scaleToZero()
+				m.scaleToZero(context.TODO())
 			}
 			lastTotalRequestCount = totalRequestCount
 		case <-ctx.Done():
@@ -226,7 +228,7 @@ func (m *metricsCollector) scrape(
 	return prc, true
 }
 
-func (m *metricsCollector) scaleToZero() {
+func (m *metricsCollector) scaleToZero(ctx context.Context) {
 	glog.Infof(
 		"Scale to zero starting for deployment %s in namespace %s",
 		m.deploymentName,
@@ -240,9 +242,11 @@ func (m *metricsCollector) scaleToZero() {
 	}}
 	patchesBytes, _ := json.Marshal(patches)
 	if _, err := m.kubeClient.AppsV1().Deployments(m.deploymentNamespace).Patch(
+		ctx,
 		m.deploymentName,
 		k8s_types.JSONPatchType,
 		patchesBytes,
+		metav1.PatchOptions{},
 	); err != nil {
 		glog.Errorf(
 			"Error scaling deployment %s in namespace %s to zero: %s",

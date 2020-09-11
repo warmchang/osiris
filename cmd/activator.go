@@ -1,15 +1,16 @@
-package main
+package cmd
 
 import (
 	"context"
 
-	deployments "github.com/deislabs/osiris/pkg/deployments/activator"
-	"github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/deislabs/osiris/pkg/version"
 	"github.com/golang/glog"
+
+	deployments "github.com/dailymotion/osiris/pkg/deployments/activator"
+	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion/osiris/pkg/version"
 )
 
-func runActivator(ctx context.Context) {
+func RunActivator(ctx context.Context) {
 	glog.Infof(
 		"Starting Osiris Activator -- version %s -- commit %s",
 		version.Version(),

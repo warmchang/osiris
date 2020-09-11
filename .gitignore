@@ -1,5 +1,6 @@
 dist/
 test/
+.cr-release-packages/
 
 # VS Code files
 .vscode/

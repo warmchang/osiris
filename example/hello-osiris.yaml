@@ -5,9 +5,9 @@ metadata:
   labels:
     app: hello-osiris
   annotations:
-    osiris.deislabs.io/enabled: "true"
-    osiris.deislabs.io/deployment: hello-osiris
-    osiris.deislabs.io/loadBalancerHostname: hello-osiris.contoso.io
+    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/deployment: hello-osiris
+    osiris.dm.gg/loadBalancerHostname: hello-osiris.contoso.io
 spec:
   type: LoadBalancer
   ports:
@@ -27,8 +27,8 @@ metadata:
   labels:
     app: hello-osiris
   annotations:
-    osiris.deislabs.io/enabled: "true"
-    osiris.deislabs.io/minReplicas: "1"
+    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/minReplicas: "1"
 spec:
   replicas: 1
   selector:

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/deislabs/osiris/pkg/kubernetes"
+	"github.com/dailymotion/osiris/pkg/kubernetes"
 
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
@@ -36,7 +36,7 @@ func newEndpointsManager(
 	svc *corev1.Service,
 	c *controller,
 ) (*endpointsManager, error) {
-	encodedPodSelector, ok := svc.Annotations["osiris.deislabs.io/selector"]
+	encodedPodSelector, ok := svc.Annotations["osiris.dm.gg/selector"]
 	if !ok {
 		return nil, fmt.Errorf(
 			"Selector not found for service %s in namespace %s",
@@ -222,6 +222,7 @@ func (e *endpointsManager) syncEndpoints() {
 	if _, err := e.controller.kubeClient.CoreV1().Endpoints(
 		e.service.Namespace,
 	).Update(
+		context.TODO(),
 		&corev1.Endpoints{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      e.service.Name,
@@ -229,6 +230,7 @@ func (e *endpointsManager) syncEndpoints() {
 			},
 			Subsets: subsets,
 		},
+		metav1.UpdateOptions{},
 	); err != nil {
 		glog.Errorf(
 			"Error creating or updating endpoints object for service %s in "+

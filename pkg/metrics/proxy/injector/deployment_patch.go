@@ -3,10 +3,11 @@ package injector
 import (
 	"encoding/json"
 
-	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
+
+	"github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 func (i *injector) getDeploymentPatchOperations(
@@ -45,17 +46,17 @@ func (i *injector) getDeploymentPatchOperations(
 			})
 		}
 
-		// Add or update "osiris.deislabs.io/enabled"
+		// Add or update "osiris.dm.gg/enabled"
 		var op string
 		if _, ok :=
-			deployment.Spec.Template.Annotations["osiris.deislabs.io/enabled"]; ok {
+			deployment.Spec.Template.Annotations["osiris.dm.gg/enabled"]; ok {
 			op = "replace"
 		} else {
 			op = "add"
 		}
 		patchOps = append(patchOps, kubernetes.PatchOperation{
 			Op:    op,
-			Path:  "/spec/template/metadata/annotations/osiris.deislabs.io~1enabled", // nolint: lll
+			Path:  "/spec/template/metadata/annotations/osiris.dm.gg~1enabled", // nolint: lll
 			Value: "true",
 		})
 
@@ -70,12 +71,12 @@ func (i *injector) getDeploymentPatchOperations(
 		return nil, nil
 	}
 
-	// Annotations exists, and "osiris.deislabs.io/enabled" exists-- remove it
+	// Annotations exists, and "osiris.dm.gg/enabled" exists-- remove it
 	if _, ok :=
-		deployment.Spec.Template.Annotations["osiris.deislabs.io/enabled"]; ok {
+		deployment.Spec.Template.Annotations["osiris.dm.gg/enabled"]; ok {
 		patchOps = append(patchOps, kubernetes.PatchOperation{
 			Op:   "remove",
-			Path: "/spec/template/metadata/annotations/osiris.deislabs.io~1enabled",
+			Path: "/spec/template/metadata/annotations/osiris.dm.gg~1enabled",
 		})
 	}
 

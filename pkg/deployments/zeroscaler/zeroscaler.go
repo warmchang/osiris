@@ -7,14 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/deislabs/osiris/pkg/healthz"
-	k8s "github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
+
+	"github.com/dailymotion/osiris/pkg/healthz"
+	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 type Zeroscaler interface {

@@ -8,14 +8,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/deislabs/osiris/pkg/healthz"
-	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+
+	"github.com/dailymotion/osiris/pkg/healthz"
+	"github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 const port = 5000
@@ -200,7 +201,7 @@ func (h *hijacker) handleRequest(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 		)
 	}
-	glog.Infof("Ready to write reponse ...")
+	glog.Infof("Ready to write response ...")
 	if _, err := w.Write(resp); err != nil {
 		glog.Errorf("Can't write response: %v", err)
 		http.Error(
@@ -213,10 +214,10 @@ func (h *hijacker) handleRequest(w http.ResponseWriter, r *http.Request) {
 
 func validateService(svc *corev1.Service) error {
 	if kubernetes.ResourceIsOsirisEnabled(svc.Annotations) {
-		if _, ok := svc.Annotations["osiris.deislabs.io/deployment"]; !ok {
+		if _, ok := svc.Annotations["osiris.dm.gg/deployment"]; !ok {
 			return fmt.Errorf(
 				`Osiris-enabled service %s in namespace %s is lacking the required `+
-					`"osiris.deislabs.io/deployment" annotation`,
+					`"osiris.dm.gg/deployment" annotation`,
 				svc.Name,
 				svc.Namespace,
 			)

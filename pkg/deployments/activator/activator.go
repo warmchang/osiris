@@ -7,13 +7,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/deislabs/osiris/pkg/healthz"
-	k8s "github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
+
+	"github.com/dailymotion/osiris/pkg/healthz"
+	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 type Activator interface {

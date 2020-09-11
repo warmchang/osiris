@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
+	"github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 const (

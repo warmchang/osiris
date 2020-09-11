@@ -1,15 +1,16 @@
-package main
+package cmd
 
 import (
 	"context"
 
-	endpoints "github.com/deislabs/osiris/pkg/endpoints/controller"
-	"github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/deislabs/osiris/pkg/version"
 	"github.com/golang/glog"
+
+	endpoints "github.com/dailymotion/osiris/pkg/endpoints/controller"
+	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion/osiris/pkg/version"
 )
 
-func runEndpointsController(ctx context.Context) {
+func RunEndpointsController(ctx context.Context) {
 	glog.Infof(
 		"Starting Osiris Endpoints Controller -- version %s -- commit %s",
 		version.Version(),

@@ -66,7 +66,7 @@ func (a *activator) handleRequest(
 			)
 			// Initiate activation (or discover that it may already have been started
 			// by another activator process)
-			if deploymentActivation, err = a.activateDeployment(app); err != nil {
+			if deploymentActivation, err = a.activateDeployment(r.Context(), app); err != nil {
 				return
 			}
 			// Add it to the index of in-flight activation
