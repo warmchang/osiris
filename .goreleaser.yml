@@ -39,7 +39,7 @@ before:
     # package Helm chart
     - rm -rf .cr-release-packages
     - mkdir -p .cr-release-packages
-    - helm package --app-version={{.Version}} --version={{.Version}} --destination .cr-release-packages charts/osiris
+    - helm package --app-version={{if .IsSnapshot}}latest{{else}}{{.Version}}{{end}} --version={{if .IsSnapshot}}0.0.0{{else}}{{.Version}}{{end}} --destination .cr-release-packages charts/osiris
 
 changelog:
   sort: asc
