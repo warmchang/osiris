@@ -61,9 +61,10 @@ jobs:
           CR_GIT_REPO: 'osiris'
 
       - name: Push Helm Charts Index
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v3.7.0-8
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./.cr-index
           destination_dir: charts
           keep_files: true
+          enable_jekyll: true
