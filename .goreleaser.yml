@@ -1,0 +1,44 @@
+# Configuration file for http://goreleaser.com
+
+builds:
+  - goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -X github.com/dailymotion/osiris/pkg/version.version={{.Version}}
+      - -X github.com/dailymotion/osiris/pkg/version.commit={{.Commit}}
+      - -X github.com/dailymotion/osiris/pkg/version.date={{.Date}}
+    env:
+      - CGO_ENABLED=0
+
+archives:
+  - format: binary
+
+dockers:
+  - dockerfile: Dockerfile.goreleaser
+    extra_files:
+      - bin/
+    image_templates:
+      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:{{ .Tag }}"
+      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:v{{ .Major }}"
+      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:v{{ .Major }}.{{ .Minor }}"
+      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:latest"
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+
+before:
+  hooks:
+    # package Helm chart
+    - rm -rf .cr-release-packages
+    - mkdir -p .cr-release-packages
+    - helm package --app-version={{.Version}} --version={{.Version}} --destination .cr-release-packages charts/osiris
+
+changelog:
+  sort: asc

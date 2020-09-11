@@ -8,10 +8,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/deislabs/osiris/pkg/healthz"
-	"github.com/deislabs/osiris/pkg/metrics"
 	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
+
+	"github.com/dailymotion/osiris/pkg/healthz"
+	"github.com/dailymotion/osiris/pkg/metrics"
 )
 
 type Proxy interface {

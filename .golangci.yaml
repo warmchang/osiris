@@ -54,7 +54,7 @@ linters-settings:
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes: github.com/org/project
+    local-prefixes: github.com/dailymotion/osiris
   golint:
     # minimal confidence for issues, default is 0.8
     min-confidence: 0.8
@@ -64,7 +64,7 @@ linters-settings:
   lll:
     # max line length, lines longer will be reported. Default is 120.
     # '\t' is counted as 1 character by default, and can be changed with the tab-width option
-    line-length: 80
+    line-length: 120
     # tab width in spaces. Default to 1.
     tab-width: 2
   maligned:

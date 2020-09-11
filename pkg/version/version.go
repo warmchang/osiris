@@ -4,6 +4,7 @@ package version
 var (
 	version string
 	commit  string
+	date    string
 )
 
 // Version returns the Osiris version. This is either a semantic version
@@ -15,4 +16,9 @@ func Version() string {
 // Commit returns the git commit SHA for the code that Osiris was built from.
 func Commit() string {
 	return commit
+}
+
+// Date returns the date when Osiris was built.
+func Date() string {
+	return date
 }

@@ -1,14 +1,15 @@
-package main
+package cmd
 
 import (
 	"context"
 
-	endpoints "github.com/deislabs/osiris/pkg/endpoints/hijacker"
-	"github.com/deislabs/osiris/pkg/version"
 	"github.com/golang/glog"
+
+	endpoints "github.com/dailymotion/osiris/pkg/endpoints/hijacker"
+	"github.com/dailymotion/osiris/pkg/version"
 )
 
-func runEndpointsHijacker(ctx context.Context) {
+func RunEndpointsHijacker(ctx context.Context) {
 	glog.Infof(
 		"Starting Osiris Endpoints Hijacker -- version %s -- commit %s",
 		version.Version(),

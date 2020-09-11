@@ -1,15 +1,16 @@
-package main
+package cmd
 
 import (
 	"context"
 
-	deployments "github.com/deislabs/osiris/pkg/deployments/zeroscaler"
-	"github.com/deislabs/osiris/pkg/kubernetes"
-	"github.com/deislabs/osiris/pkg/version"
 	"github.com/golang/glog"
+
+	deployments "github.com/dailymotion/osiris/pkg/deployments/zeroscaler"
+	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion/osiris/pkg/version"
 )
 
-func runZeroScaler(ctx context.Context) {
+func RunZeroScaler(ctx context.Context) {
 	glog.Infof(
 		"Starting Osiris Zeroscaler -- version %s -- commit %s",
 		version.Version(),

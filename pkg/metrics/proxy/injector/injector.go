@@ -8,13 +8,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/deislabs/osiris/pkg/healthz"
-	"github.com/deislabs/osiris/pkg/kubernetes"
 	"github.com/golang/glog"
 	"k8s.io/api/admission/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+
+	"github.com/dailymotion/osiris/pkg/healthz"
+	"github.com/dailymotion/osiris/pkg/kubernetes"
 )
 
 const port = 5000
@@ -172,7 +173,7 @@ func (i *injector) handleRequest(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 		)
 	}
-	glog.Infof("Ready to write reponse ...")
+	glog.Infof("Ready to write response ...")
 	if _, err := w.Write(resp); err != nil {
 		glog.Errorf("Can't write response: %v", err)
 		http.Error(

@@ -1,6 +1,18 @@
 # Osiris - A general purpose, Scale to Zero component for Kubernetes
 
-[![CircleCI](https://circleci.com/gh/deislabs/osiris/tree/master.svg?style=svg)](https://circleci.com/gh/deislabs/osiris/tree/master)
+**This is a fork of the original [deislabs' Osiris](https://github.com/dailymotion/osiris)**.
+
+It was forked before the [HTTPS and HTTP/2 support PR](https://github.com/deislabs/osiris/pull/27),
+because we observed [failed requests with the proxy](https://github.com/deislabs/osiris/issues/45)
+following this change.
+
+We also have [a set of new features](https://github.com/deislabs/osiris/pulls) we'd like to add,
+and we can iterate faster on our own fork.
+
+The long-term plan is NOT to maintain this fork, but to merge back into the original project - 
+depending on the original project maintainers.
+
+## Introduction
 
 Osiris enables greater resource efficiency within a Kubernetes cluster by
 allowing idling workloads to automatically scale-to-zero and allowing
@@ -59,35 +71,23 @@ Cluster Autoscaler:
 
 Prerequisites:
 
-* [Helm](https://docs.helm.sh/using_helm/#installing-helm) (v2.11.0 or greater)
+* [Helm](https://helm.sh/docs/intro/) (v2.11.0+, or v3+)
 * A running Kubernetes cluster.
 
 ### Install Osiris
 
-Osiris' Helm chart is hosted in an
-[Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/),
-which does not yet support anonymous access to charts therein. Until this is
-resolved, adding the Helm repository from which Osiris can be installed requires
-use of a shared set of read-only credentials.
-
-Make sure helm is initialized in your running kubernetes cluster.
-
-For more details on initializing helm, Go [here](https://docs.helm.sh/helm/#helm)
+First, add the Osiris charts repository:
 
 ```
-helm repo add osiris https://osiris.azurecr.io/helm/v1/repo \
-  --username eae9749a-fccf-4a24-ac0d-6506fe2a6ab3 \
-  --password 2fc6a721-85e4-41ca-933d-2ca02e1394c4
+helm repo add osiris https://dailymotion.github.io/osiris/charts
 ```
 
-Installation requires use of the `--devel` flag to indicate pre-release versions
-of the specified chart are eligible for download and installation:
+And then install it:
 
 ```
-helm install osiris/osiris-edge \
+helm install osiris/osiris \
   --name osiris \
-  --namespace osiris-system \
-  --devel
+  --namespace osiris-system
 ```
 
 ## Usage
@@ -105,7 +105,7 @@ metadata:
   namespace: my-aoo
   name: my-app
   annotations:
-    osiris.deislabs.io/enabled: "true"
+    osiris.dm.gg/enabled: "true"
 spec:
   replicas: 1
   selector:
@@ -135,8 +135,8 @@ metadata:
   namespace: my-namespace
   name: my-app
   annotations:
-    osiris.deislabs.io/enabled: "true"
-    osiris.deislabs.io/deployment: my-app
+    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/deployment: my-app
 spec:
   selector:
     app: my-app
@@ -181,3 +181,7 @@ them for the near term.
 ## Contributing
 
 Osiris follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
+
+## Credit 
+
+[Deislabs](https://github.com/deislabs) for their original work on [Osiris](https://github.com/dailymotion/osiris).

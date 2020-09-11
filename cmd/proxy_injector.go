@@ -1,14 +1,15 @@
-package main
+package cmd
 
 import (
 	"context"
 
-	proxy "github.com/deislabs/osiris/pkg/metrics/proxy/injector"
-	"github.com/deislabs/osiris/pkg/version"
 	"github.com/golang/glog"
+
+	proxy "github.com/dailymotion/osiris/pkg/metrics/proxy/injector"
+	"github.com/dailymotion/osiris/pkg/version"
 )
 
-func runProxyInjector(ctx context.Context) {
+func RunProxyInjector(ctx context.Context) {
 	glog.Infof(
 		"Starting Osiris Proxy Injector -- version %s -- commit %s",
 		version.Version(),

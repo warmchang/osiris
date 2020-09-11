@@ -1,6 +1,8 @@
 package kubernetes
 
 import (
+	"context"
+
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -28,7 +30,7 @@ func DeploymentsIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return deploymentsClient.List(options)
+				return deploymentsClient.List(context.TODO(), options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if fieldSelector != nil {
@@ -37,7 +39,7 @@ func DeploymentsIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return deploymentsClient.Watch(options)
+				return deploymentsClient.Watch(context.TODO(), options)
 			},
 		},
 		&appsv1.Deployment{},
@@ -62,7 +64,7 @@ func PodsIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return podsClient.List(options)
+				return podsClient.List(context.TODO(), options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if fieldSelector != nil {
@@ -71,7 +73,7 @@ func PodsIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return podsClient.Watch(options)
+				return podsClient.Watch(context.TODO(), options)
 			},
 		},
 		&corev1.Pod{},
@@ -96,7 +98,7 @@ func ServicesIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return servicesClient.List(options)
+				return servicesClient.List(context.TODO(), options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if fieldSelector != nil {
@@ -105,7 +107,7 @@ func ServicesIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return servicesClient.Watch(options)
+				return servicesClient.Watch(context.TODO(), options)
 			},
 		},
 		&corev1.Service{},
@@ -130,7 +132,7 @@ func EndpointsIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return endpointsClient.List(options)
+				return endpointsClient.List(context.TODO(), options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if fieldSelector != nil {
@@ -139,7 +141,7 @@ func EndpointsIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return endpointsClient.Watch(options)
+				return endpointsClient.Watch(context.TODO(), options)
 			},
 		},
 		&corev1.Endpoints{},
@@ -164,7 +166,7 @@ func NodesIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return nodesClient.List(options)
+				return nodesClient.List(context.TODO(), options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				if fieldSelector != nil {
@@ -173,7 +175,7 @@ func NodesIndexInformer(
 				if labelSelector != nil {
 					options.LabelSelector = labelSelector.String()
 				}
-				return nodesClient.Watch(options)
+				return nodesClient.Watch(context.TODO(), options)
 			},
 		},
 		&corev1.Node{},

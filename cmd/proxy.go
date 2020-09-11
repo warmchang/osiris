@@ -1,14 +1,15 @@
-package main
+package cmd
 
 import (
 	"context"
 
-	"github.com/deislabs/osiris/pkg/metrics/proxy/proxy"
-	"github.com/deislabs/osiris/pkg/version"
 	"github.com/golang/glog"
+
+	"github.com/dailymotion/osiris/pkg/metrics/proxy/proxy"
+	"github.com/dailymotion/osiris/pkg/version"
 )
 
-func runProxy(ctx context.Context) {
+func RunProxy(ctx context.Context) {
 	glog.Infof(
 		"Starting Osiris Proxy -- version %s -- commit %s",
 		version.Version(),

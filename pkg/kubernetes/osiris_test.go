@@ -11,42 +11,42 @@ func TestResourceIsOsirisEnabled(t *testing.T) {
 		{
 			name: "map with osiris enabled entry and value 1",
 			annotations: map[string]string{
-				"osiris.deislabs.io/enabled": "1",
+				"osiris.dm.gg/enabled": "1",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value true",
 			annotations: map[string]string{
-				"osiris.deislabs.io/enabled": "true",
+				"osiris.dm.gg/enabled": "true",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value on",
 			annotations: map[string]string{
-				"osiris.deislabs.io/enabled": "on",
+				"osiris.dm.gg/enabled": "on",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value y",
 			annotations: map[string]string{
-				"osiris.deislabs.io/enabled": "y",
+				"osiris.dm.gg/enabled": "y",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value yes",
 			annotations: map[string]string{
-				"osiris.deislabs.io/enabled": "yes",
+				"osiris.dm.gg/enabled": "yes",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with no osiris enabled entry ",
 			annotations: map[string]string{
-				"osiris.deislabs.io/notenabled": "yes",
+				"osiris.dm.gg/notenabled": "yes",
 			},
 			expectedResult: false,
 		},
@@ -54,7 +54,7 @@ func TestResourceIsOsirisEnabled(t *testing.T) {
 		{
 			name: "map with osiris enabled entry and invalid value",
 			annotations: map[string]string{
-				"osiris.deislabs.io/enabled": "yee",
+				"osiris.dm.gg/enabled": "yee",
 			},
 			expectedResult: false,
 		},
@@ -82,21 +82,21 @@ func TestGetMinReplicas(t *testing.T) {
 		{
 			name: "map with min replicas entry",
 			annotations: map[string]string{
-				"osiris.deislabs.io/minReplicas": "3",
+				"osiris.dm.gg/minReplicas": "3",
 			},
 			expectedResult: 3,
 		},
 		{
 			name: "map with no min replicas entry",
 			annotations: map[string]string{
-				"osiris.deislabs.io/notminReplicas": "3",
+				"osiris.dm.gg/notminReplicas": "3",
 			},
 			expectedResult: 1,
 		},
 		{
 			name: "map with invalid min replicas entry",
 			annotations: map[string]string{
-				"osiris.deislabs.io/minReplicas": "invalid",
+				"osiris.dm.gg/minReplicas": "invalid",
 			},
 			expectedResult: 1,
 		},

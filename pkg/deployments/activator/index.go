@@ -11,8 +11,8 @@ import (
 
 // nolint: lll
 var (
-	loadBalancerHostnameAnnotationRegex = regexp.MustCompile(`^osiris\.deislabs\.io/loadBalancerHostname(?:-\d+)?$`)
-	ingressHostnameAnnotationRegex      = regexp.MustCompile(`^osiris\.deislabs\.io/ingressHostname(?:-\d+)?$`)
+	loadBalancerHostnameAnnotationRegex = regexp.MustCompile(`^osiris\.dm\.gg/loadBalancerHostname(?:-\d+)?$`)
+	ingressHostnameAnnotationRegex      = regexp.MustCompile(`^osiris\.dm\.gg/ingressHostname(?:-\d+)?$`)
 )
 
 // updateIndex builds an index that maps all the possible ways a service can be
@@ -23,7 +23,7 @@ func (a *activator) updateIndex() {
 	appsByHost := map[string]*app{}
 	for _, svc := range a.services {
 		if deploymentName, ok :=
-			svc.Annotations["osiris.deislabs.io/deployment"]; ok {
+			svc.Annotations["osiris.dm.gg/deployment"]; ok {
 			svcDNSName :=
 				fmt.Sprintf("%s.%s.svc.cluster.local", svc.Name, svc.Namespace)
 			// Determine the "default" ingress port. When a request arrives at the
@@ -35,7 +35,7 @@ func (a *activator) updateIndex() {
 			var ingressDefaultPort string
 			// Start by seeing if a default port was explicitly specified.
 			if ingressDefaultPort, ok =
-				svc.Annotations["osiris.deislabs.io/ingressDefaultPort"]; !ok {
+				svc.Annotations["osiris.dm.gg/ingressDefaultPort"]; !ok {
 				// If not specified, try to infer it.
 				// If there's only one port, that's it.
 				if len(svc.Spec.Ports) == 1 {
@@ -92,7 +92,7 @@ func (a *activator) updateIndex() {
 						}
 					}
 					// Honor all annotations of the form
-					// ^osiris\.deislabs\.io/loadBalancerHostname(?:-\d+)?$
+					// ^osiris\.dm\.gg/loadBalancerHostname(?:-\d+)?$
 					for k, v := range svc.Annotations {
 						if loadBalancerHostnameAnnotationRegex.MatchString(k) {
 							appsByHost[v] = app
@@ -101,7 +101,7 @@ func (a *activator) updateIndex() {
 				}
 				if fmt.Sprintf("%d", port.Port) == ingressDefaultPort {
 					// Honor all annotations of the form
-					// ^osiris\.deislabs\.io/ingressHostname(?:-\d+)?$
+					// ^osiris\.dm\.gg/ingressHostname(?:-\d+)?$
 					for k, v := range svc.Annotations {
 						if ingressHostnameAnnotationRegex.MatchString(k) {
 							appsByHost[v] = app
@@ -126,7 +126,7 @@ func (a *activator) updateIndex() {
 					}
 				}
 				// Honor all annotations of the form
-				// ^osiris\.deislabs\.io/loadBalancerHostname(?:-\d+)?$
+				// ^osiris\.dm\.gg/loadBalancerHostname(?:-\d+)?$
 				for k, v := range svc.Annotations {
 					if loadBalancerHostnameAnnotationRegex.MatchString(k) {
 						appsByHost[fmt.Sprintf("%s:%d", v, port.Port)] = app

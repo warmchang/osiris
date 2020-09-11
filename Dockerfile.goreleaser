@@ -1,0 +1,11 @@
+# Dockerfile used by GoReleaser
+# Requires the binary to be pre-built
+
+FROM alpine:3.12
+
+RUN apk add --no-cache ca-certificates iptables
+RUN addgroup -S -g 1000 osiris \
+  && adduser -S -u 1000 -G osiris -s /sbin/nologin -H osiris
+
+COPY bin/ /osiris/bin/
+COPY osiris /osiris/bin/
