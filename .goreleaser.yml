@@ -21,6 +21,7 @@ dockers:
     extra_files:
       - bin/
     image_templates:
+      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:{{ .Version }}"
       - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:{{ .Tag }}"
       - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:v{{ .Major }}"
       - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:v{{ .Major }}.{{ .Minor }}"

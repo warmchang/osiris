@@ -49,6 +49,8 @@ jobs:
           CR_COMMIT: ${{ github.sha }}
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create Helm Charts Index Directory
+        run: mkdir -p ./.cr-index
       - name: Update Helm Charts Index
         uses: docker://quay.io/helmpack/chart-releaser:v1.0.0
         with:
