@@ -29,6 +29,7 @@ metadata:
   annotations:
     osiris.dm.gg/enabled: "true"
     osiris.dm.gg/minReplicas: "1"
+    osiris.dm.gg/metricsCheckInterval: "120" # seconds
 spec:
   replicas: 1
   selector:
