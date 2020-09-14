@@ -24,8 +24,8 @@ func (a *activator) updateIndex() {
 	for _, svc := range a.services {
 		if deploymentName, ok :=
 			svc.Annotations["osiris.dm.gg/deployment"]; ok {
-			svcDNSName :=
-				fmt.Sprintf("%s.%s.svc.cluster.local", svc.Name, svc.Namespace)
+			svcShortDNSName := fmt.Sprintf("%s.%s", svc.Name, svc.Namespace)
+			svcFullDNSName := fmt.Sprintf("%s.svc.cluster.local", svcShortDNSName)
 			// Determine the "default" ingress port. When a request arrives at the
 			// activator via an ingress conroller, the request's host header won't
 			// indicate a port. After activation is complete, the activator needs to
@@ -81,8 +81,9 @@ func (a *activator) updateIndex() {
 				}
 				// If the port is 80, also index by hostname/IP sans port number...
 				if port.Port == 80 {
-					// kube-dns name
-					appsByHost[svcDNSName] = app
+					// kube-dns names
+					appsByHost[svcShortDNSName] = app
+					appsByHost[svcFullDNSName] = app
 					// cluster IP
 					appsByHost[svc.Spec.ClusterIP] = app
 					// external IPs
@@ -109,8 +110,9 @@ func (a *activator) updateIndex() {
 					}
 				}
 				// Now index by hostname/IP:port...
-				// kube-dns name
-				appsByHost[fmt.Sprintf("%s:%d", svcDNSName, port.Port)] = app
+				// kube-dns names
+				appsByHost[fmt.Sprintf("%s:%d", svcShortDNSName, port.Port)] = app
+				appsByHost[fmt.Sprintf("%s:%d", svcFullDNSName, port.Port)] = app
 				// cluster IP
 				appsByHost[fmt.Sprintf("%s:%d", svc.Spec.ClusterIP, port.Port)] = app
 				// external IPs
