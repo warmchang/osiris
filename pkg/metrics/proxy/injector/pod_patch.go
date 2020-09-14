@@ -149,11 +149,11 @@ func (i *injector) getPodPatchOperations(
 			},
 			ReadinessProbe: &corev1.Probe{
 				Handler: corev1.Handler{
-					HTTPGet: &corev1.HTTPGetAction{
+					TCPSocket: &corev1.TCPSocketAction{
 						Port: intstr.FromInt(int(metricsAndHealthPort)),
-						Path: "/healthz",
 					},
 				},
+				PeriodSeconds: 1,
 			},
 		}
 
