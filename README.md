@@ -74,7 +74,7 @@ Prerequisites:
 * [Helm](https://helm.sh/docs/intro/) (v2.11.0+, or v3+)
 * A running Kubernetes cluster.
 
-### Install Osiris
+### Installation
 
 First, add the Osiris charts repository:
 
@@ -88,6 +88,26 @@ And then install it:
 helm install osiris/osiris \
   --name osiris \
   --namespace osiris-system
+```
+
+#### Installation Options
+
+Osiris global configuration is minimal - because most of it will be done by the users
+with annotations on the Kubernetes resources.
+
+The following table lists the configurable parameters of the Helm chart and their default values.
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `zeroscaler.metricsCheckInterval` | The interval in which the zeroScaler would repeatedly track the pod http request metrics. The value is the number of seconds of the interval. | `150` |
+
+Example of installation with Helm and a custom configuration:
+
+```
+helm install osiris/osiris \
+  --name osiris \
+  --namespace osiris-system \
+  --set zeroscaler.metricsCheckInterval=600
 ```
 
 ## Usage
@@ -142,6 +162,34 @@ spec:
     app: my-app
   # ...
 ```
+
+### Configuration
+
+Most of Osiris configuration is done with Kubernetes annotations - as seen in the Usage section.
+
+#### Deployment Annotations
+
+The following table lists the supported annotations for Kubernetes `Deployments` and their default values.
+
+| Annotation | Description | Default |
+| ---------- | ----------- | ------- |
+| `osiris.dm.gg/enabled` | Enable Osiris for this deployment. Allowed values: `y`, `yes`, `true`, `on`, `1`. | _no value_ (= disabled) |
+| `osiris.dm.gg/minReplicas` | The minimum number of replicas to set on the deployment when Osiris will scale up. If you set `2`, Osiris will scale the deployment from `0` to `2` replicas directly. Osiris won't collect metrics from deployments which have more than `minReplicas` replicas - to avoid useless collections of metrics. | `1` |
+
+#### Service Annotations
+
+The following table lists the supported annotations for Kubernetes `Services` and their default values.
+
+| Annotation | Description | Default |
+| ---------- | ----------- | ------- |
+| `osiris.dm.gg/enabled` | Enable Osiris for this service. Allowed values: `y`, `yes`, `true`, `on`, `1`. | _no value_ (= disabled) |
+| `osiris.dm.gg/deployment` | Name of the deployment which is behind this service. This is required to map the service with its deployment. | _no value_ |
+| `osiris.dm.gg/loadBalancerHostname` | Map requests coming from a specific hostname to this service. Note that if you have multiple hostnames, you can set them with different annotations, using `osiris.dm.gg/loadBalancerHostname-1`, `osiris.dm.gg/loadBalancerHostname-2`, ... | _no value_ |
+| `osiris.dm.gg/ingressHostname` | Map requests coming from a specific hostname to this service. If you use an ingress in front of your service, this is required to create a link between the ingress and the service. Note that if you have multiple hostnames, you can set them with different annotations, using `osiris.dm.gg/ingressHostname-1`, `osiris.dm.gg/ingressHostname-2`, ... | _no value_ |
+| `osiris.dm.gg/ingressDefaultPort` | Custom service port when the request comes from an ingress. Default behaviour if there are more than 1 port on the service, is to look for a port named `http`, and fallback to the port `80`. Set this if you have multiple ports and using a non-standard port with a non-standard name. | _no value_ |
+| `osiris.ddm.gg/tlsPort` | Custom port for TLS-secured requests. Default behaviour if there are more than 1 port on the service, is to look for a port named `https`, and fallback to the port `443`. Set this if you have multiple ports and using a non-standard TLS port with a non-standard name. | _no value_ |
+
+Note that you might see an `osiris.dm.gg/selector` annotation - this is for internal use only, and you shouldn't try to set/update or delete it.
 
 ### Demo
 
