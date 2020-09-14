@@ -214,10 +214,13 @@ func (h *hijacker) handleRequest(w http.ResponseWriter, r *http.Request) {
 
 func validateService(svc *corev1.Service) error {
 	if kubernetes.ResourceIsOsirisEnabled(svc.Annotations) {
-		if _, ok := svc.Annotations["osiris.dm.gg/deployment"]; !ok {
+		_, deploymentPresent := svc.Annotations["osiris.dm.gg/deployment"]
+		_, statefulSetPresent := svc.Annotations["osiris.dm.gg/statefulset"]
+		if !deploymentPresent && !statefulSetPresent {
 			return fmt.Errorf(
 				`Osiris-enabled service %s in namespace %s is lacking the required `+
-					`"osiris.dm.gg/deployment" annotation`,
+					`"osiris.dm.gg/deployment" or`+
+					`"osiris.dm.gg/statefulset" annotation`,
 				svc.Name,
 				svc.Namespace,
 			)

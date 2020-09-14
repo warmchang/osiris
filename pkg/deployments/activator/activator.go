@@ -21,16 +21,16 @@ type Activator interface {
 }
 
 type activator struct {
-	kubeClient                kubernetes.Interface
-	servicesInformer          cache.SharedIndexInformer
-	nodeInformer              cache.SharedIndexInformer
-	services                  map[string]*corev1.Service
-	nodeAddresses             map[string]struct{}
-	appsByHost                map[string]*app
-	indicesLock               sync.RWMutex
-	deploymentActivations     map[string]*deploymentActivation
-	deploymentActivationsLock sync.Mutex
-	srv                       *http.Server
+	kubeClient         kubernetes.Interface
+	servicesInformer   cache.SharedIndexInformer
+	nodeInformer       cache.SharedIndexInformer
+	services           map[string]*corev1.Service
+	nodeAddresses      map[string]struct{}
+	appsByHost         map[string]*app
+	indicesLock        sync.RWMutex
+	appActivations     map[string]*appActivation
+	appActivationsLock sync.Mutex
+	srv                *http.Server
 }
 
 func NewActivator(kubeClient kubernetes.Interface) Activator {
@@ -56,8 +56,8 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 			Addr:    fmt.Sprintf(":%d", port),
 			Handler: mux,
 		},
-		appsByHost:            map[string]*app{},
-		deploymentActivations: map[string]*deploymentActivation{},
+		appsByHost:     map[string]*app{},
+		appActivations: map[string]*appActivation{},
 	}
 	a.servicesInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: a.syncService,
@@ -106,7 +106,7 @@ func (a *activator) syncService(obj interface{}) {
 	a.indicesLock.Lock()
 	defer a.indicesLock.Unlock()
 	svc := obj.(*corev1.Service)
-	svcKey := getKey(svc.Namespace, svc.Name)
+	svcKey := getKey(svc.Namespace, "Service", svc.Name)
 	if k8s.ResourceIsOsirisEnabled(svc.Annotations) {
 		a.services[svcKey] = svc
 	} else {
@@ -119,7 +119,7 @@ func (a *activator) syncDeletedService(obj interface{}) {
 	a.indicesLock.Lock()
 	defer a.indicesLock.Unlock()
 	svc := obj.(*corev1.Service)
-	svcKey := getKey(svc.Namespace, svc.Name)
+	svcKey := getKey(svc.Namespace, "Service", svc.Name)
 	delete(a.services, svcKey)
 	a.updateIndex()
 }

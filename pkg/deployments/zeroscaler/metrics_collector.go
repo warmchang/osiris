@@ -28,8 +28,9 @@ const (
 
 type metricsCollector struct {
 	kubeClient           kubernetes.Interface
-	deploymentName       string
-	deploymentNamespace  string
+	appKind              string
+	appName              string
+	appNamespace         string
 	selector             labels.Selector
 	metricsCheckInterval time.Duration
 	podsInformer         cache.SharedIndexInformer
@@ -41,20 +42,22 @@ type metricsCollector struct {
 
 func newMetricsCollector(
 	kubeClient kubernetes.Interface,
-	deploymentName string,
-	deploymentNamespace string,
+	appKind string,
+	appName string,
+	appNamespace string,
 	selector labels.Selector,
 	metricsCheckInterval time.Duration,
 ) *metricsCollector {
 	m := &metricsCollector{
 		kubeClient:           kubeClient,
-		deploymentName:       deploymentName,
-		deploymentNamespace:  deploymentNamespace,
+		appKind:              appKind,
+		appName:              appName,
+		appNamespace:         appNamespace,
 		selector:             selector,
 		metricsCheckInterval: metricsCheckInterval,
 		podsInformer: k8s.PodsIndexInformer(
 			kubeClient,
-			deploymentNamespace,
+			appNamespace,
 			nil,
 			selector,
 		),
@@ -82,15 +85,17 @@ func (m *metricsCollector) run(ctx context.Context) {
 	go func() {
 		<-ctx.Done()
 		glog.Infof(
-			"Stopping metrics collection for deployment %s in namespace %s",
-			m.deploymentName,
-			m.deploymentNamespace,
+			"Stopping metrics collection for %s %s in namespace %s",
+			m.appKind,
+			m.appName,
+			m.appNamespace,
 		)
 	}()
 	glog.Infof(
-		"Starting metrics collection for deployment %s in namespace %s",
-		m.deploymentName,
-		m.deploymentNamespace,
+		"Starting metrics collection for %s %s in namespace %s",
+		m.appKind,
+		m.appName,
+		m.appNamespace,
 	)
 	go m.podsInformer.Run(ctx.Done())
 	// When this exits, the cancel func will stop the informer
@@ -230,9 +235,10 @@ func (m *metricsCollector) scrape(
 
 func (m *metricsCollector) scaleToZero(ctx context.Context) {
 	glog.Infof(
-		"Scale to zero starting for deployment %s in namespace %s",
-		m.deploymentName,
-		m.deploymentNamespace,
+		"Scale to zero starting for %s %s in namespace %s",
+		m.appKind,
+		m.appName,
+		m.appNamespace,
 	)
 
 	patches := []k8s.PatchOperation{{
@@ -241,25 +247,42 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 		Value: 0,
 	}}
 	patchesBytes, _ := json.Marshal(patches)
-	if _, err := m.kubeClient.AppsV1().Deployments(m.deploymentNamespace).Patch(
-		ctx,
-		m.deploymentName,
-		k8s_types.JSONPatchType,
-		patchesBytes,
-		metav1.PatchOptions{},
-	); err != nil {
+	var err error
+	switch m.appKind {
+	case "Deployment":
+		_, err = m.kubeClient.AppsV1().Deployments(m.appNamespace).Patch(
+			ctx,
+			m.appName,
+			k8s_types.JSONPatchType,
+			patchesBytes,
+			metav1.PatchOptions{},
+		)
+	case "StatefulSet":
+		_, err = m.kubeClient.AppsV1().StatefulSets(m.appNamespace).Patch(
+			ctx,
+			m.appName,
+			k8s_types.JSONPatchType,
+			patchesBytes,
+			metav1.PatchOptions{},
+		)
+	default:
+		err = fmt.Errorf("unknown kind '%s'", m.appKind)
+	}
+	if err != nil {
 		glog.Errorf(
-			"Error scaling deployment %s in namespace %s to zero: %s",
-			m.deploymentName,
-			m.deploymentNamespace,
+			"Error scaling %s %s in namespace %s to zero: %s",
+			m.appKind,
+			m.appName,
+			m.appNamespace,
 			err,
 		)
 		return
 	}
 
 	glog.Infof(
-		"Scaled deployment %s in namespace %s to zero",
-		m.deploymentName,
-		m.deploymentNamespace,
+		"Scaled %s %s in namespace %s to zero",
+		m.appKind,
+		m.appName,
+		m.appNamespace,
 	)
 }

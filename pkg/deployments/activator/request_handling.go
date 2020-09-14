@@ -13,7 +13,7 @@ func (a *activator) handleRequest(
 	defer r.Body.Close()
 
 	glog.Infof(
-		"Request received for for host %s with URI %s",
+		"Request received for host %s with URI %s",
 		r.Host,
 		r.RequestURI,
 	)
@@ -22,74 +22,95 @@ func (a *activator) handleRequest(
 	app, ok := a.appsByHost[r.Host]
 	a.indicesLock.RUnlock()
 	if !ok {
-		glog.Infof("No deployment found for host %s", r.Host)
+		glog.Infof("No deployment/statefulset found for host %s", r.Host)
 		a.returnError(w, http.StatusNotFound)
 		return
 	}
 
 	glog.Infof(
-		"Deployment %s in namespace %s may require activation",
-		app.deploymentName,
+		"%s %s in namespace %s may require activation",
+		app.kind,
+		app.name,
 		app.namespace,
 	)
 
-	// Are we already activating the deployment in question?
+	// Are we already activating the deployment/statefulset in question?
 	var err error
-	deploymentKey := getKey(app.namespace, app.deploymentName)
-	deploymentActivation, ok := a.deploymentActivations[deploymentKey]
+	appKey := getKey(app.namespace, app.kind, app.name)
+	appActivation, ok := a.appActivations[appKey]
 	if ok {
 		glog.Infof(
-			"Found activation in-progress for deployment %s in namespace %s",
-			app.deploymentName,
+			"Found activation in-progress for %s %s in namespace %s",
+			app.kind,
+			app.name,
 			app.namespace,
 		)
 	} else {
 		func() {
-			a.deploymentActivationsLock.Lock()
-			defer a.deploymentActivationsLock.Unlock()
-			// Some other goroutine could have initiated activation of this deployment
+			a.appActivationsLock.Lock()
+			defer a.appActivationsLock.Unlock()
+			// Some other goroutine could have initiated activation of this deployment/statefulset
 			// while we were waiting for the lock. Now that we have the lock, do we
 			// still need to do this?
-			deploymentActivation, ok = a.deploymentActivations[deploymentKey]
+			appActivation, ok = a.appActivations[appKey]
 			if ok {
 				glog.Infof(
-					"Found activation in-progress for deployment %s in namespace %s",
-					app.deploymentName,
+					"Found activation in-progress for %s %s in namespace %s",
+					app.kind,
+					app.name,
 					app.namespace,
 				)
 				return
 			}
 			glog.Infof(
-				"Found NO activation in-progress for deployment %s in namespace %s",
-				app.deploymentName,
+				"Found NO activation in-progress for %s %s in namespace %s",
+				app.kind,
+				app.name,
 				app.namespace,
 			)
 			// Initiate activation (or discover that it may already have been started
 			// by another activator process)
-			if deploymentActivation, err = a.activateDeployment(r.Context(), app); err != nil {
+			switch app.kind {
+			case appKindDeployment:
+				appActivation, err = a.activateDeployment(r.Context(), app)
+			case appKindStatefulSet:
+				appActivation, err = a.activateStatefulSet(r.Context(), app)
+			default:
+				glog.Errorf("unvalid app kind %s", app.kind)
+				return
+			}
+			if err != nil {
+				glog.Errorf(
+					"%s activation for %s in namespace %s failed: %s",
+					app.kind,
+					app.name,
+					app.namespace,
+					err,
+				)
 				return
 			}
 			// Add it to the index of in-flight activation
-			a.deploymentActivations[deploymentKey] = deploymentActivation
+			a.appActivations[appKey] = appActivation
 			// But remove it from that index when it's complete
 			go func() {
 				deleteActivation := func() {
-					a.deploymentActivationsLock.Lock()
-					defer a.deploymentActivationsLock.Unlock()
-					delete(a.deploymentActivations, deploymentKey)
+					a.appActivationsLock.Lock()
+					defer a.appActivationsLock.Unlock()
+					delete(a.appActivations, appKey)
 				}
 				select {
-				case <-deploymentActivation.successCh:
+				case <-appActivation.successCh:
 					deleteActivation()
-				case <-deploymentActivation.timeoutCh:
+				case <-appActivation.timeoutCh:
 					deleteActivation()
 				}
 			}()
 		}()
 		if err != nil {
 			glog.Errorf(
-				"Error activating deployment %s in namespace %s: %s",
-				app.deploymentName,
+				"Error activating %s %s in namespace %s: %s",
+				app.kind,
+				app.name,
 				app.namespace,
 				err,
 			)
@@ -102,10 +123,10 @@ func (a *activator) handleRequest(
 	// progress, we need to wait for that activation to be completed... or fail...
 	// or time out.
 	select {
-	case <-deploymentActivation.successCh:
+	case <-appActivation.successCh:
 		glog.Infof("Passing request on to: %s", app.targetURL)
 		app.proxyRequestHandler.ServeHTTP(w, r)
-	case <-deploymentActivation.timeoutCh:
+	case <-appActivation.timeoutCh:
 		a.returnError(w, http.StatusServiceUnavailable)
 	}
 }

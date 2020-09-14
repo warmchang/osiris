@@ -48,6 +48,40 @@ func DeploymentsIndexInformer(
 	)
 }
 
+func StatefulSetsIndexInformer(
+	client kubernetes.Interface,
+	namespace string,
+	fieldSelector fields.Selector,
+	labelSelector labels.Selector,
+) cache.SharedIndexInformer {
+	statefulSetsClient := client.AppsV1().StatefulSets(namespace)
+	return cache.NewSharedIndexInformer(
+		&cache.ListWatch{
+			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
+				if fieldSelector != nil {
+					options.FieldSelector = fieldSelector.String()
+				}
+				if labelSelector != nil {
+					options.LabelSelector = labelSelector.String()
+				}
+				return statefulSetsClient.List(context.TODO(), options)
+			},
+			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
+				if fieldSelector != nil {
+					options.FieldSelector = fieldSelector.String()
+				}
+				if labelSelector != nil {
+					options.LabelSelector = labelSelector.String()
+				}
+				return statefulSetsClient.Watch(context.TODO(), options)
+			},
+		},
+		&appsv1.StatefulSet{},
+		0,
+		cache.Indexers{},
+	)
+}
+
 func PodsIndexInformer(
 	client kubernetes.Interface,
 	namespace string,
