@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
@@ -32,7 +31,6 @@ type activator struct {
 	deploymentActivations     map[string]*deploymentActivation
 	deploymentActivationsLock sync.Mutex
 	srv                       *http.Server
-	httpClient                *http.Client
 }
 
 func NewActivator(kubeClient kubernetes.Interface) Activator {
@@ -60,9 +58,6 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 		},
 		appsByHost:            map[string]*app{},
 		deploymentActivations: map[string]*deploymentActivation{},
-		httpClient: &http.Client{
-			Timeout: time.Minute * 1,
-		},
 	}
 	a.servicesInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: a.syncService,
