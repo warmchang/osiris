@@ -5,10 +5,18 @@ import (
 	"net/url"
 )
 
+type appKind string
+
+const (
+	appKindDeployment  appKind = "Deployment"
+	appKindStatefulSet appKind = "StatefulSet"
+)
+
 type app struct {
 	namespace           string
 	serviceName         string
-	deploymentName      string
+	name                string
+	kind                appKind
 	targetURL           *url.URL
 	proxyRequestHandler *httputil.ReverseProxy
 }

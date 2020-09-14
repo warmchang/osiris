@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	appsv1 "k8s.io/api/apps/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
 	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
@@ -79,7 +77,7 @@ func TestGetMetricsCheckInterval(t *testing.T) {
 	testcases := []struct {
 		name           string
 		zeroScaler     *zeroscaler
-		deployment     *appsv1.Deployment
+		annotations    map[string]string
 		expectedResult time.Duration
 	}{
 		{
@@ -89,11 +87,7 @@ func TestGetMetricsCheckInterval(t *testing.T) {
 					MetricsCheckInterval: 150,
 				},
 			},
-			deployment: &appsv1.Deployment{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{},
-				},
-			},
+			annotations:    map[string]string{},
 			expectedResult: 150 * time.Second,
 		},
 		{
@@ -103,12 +97,8 @@ func TestGetMetricsCheckInterval(t *testing.T) {
 					MetricsCheckInterval: 150,
 				},
 			},
-			deployment: &appsv1.Deployment{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						k8s.MetricsCheckIntervalAnnotationName: "60",
-					},
-				},
+			annotations: map[string]string{
+				k8s.MetricsCheckIntervalAnnotationName: "60",
 			},
 			expectedResult: 60 * time.Second,
 		},
@@ -119,12 +109,8 @@ func TestGetMetricsCheckInterval(t *testing.T) {
 					MetricsCheckInterval: 150,
 				},
 			},
-			deployment: &appsv1.Deployment{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						k8s.MetricsCheckIntervalAnnotationName: "something",
-					},
-				},
+			annotations: map[string]string{
+				k8s.MetricsCheckIntervalAnnotationName: "something",
 			},
 			expectedResult: 150 * time.Second,
 		},
@@ -135,12 +121,8 @@ func TestGetMetricsCheckInterval(t *testing.T) {
 					MetricsCheckInterval: 150,
 				},
 			},
-			deployment: &appsv1.Deployment{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						k8s.MetricsCheckIntervalAnnotationName: "-60",
-					},
-				},
+			annotations: map[string]string{
+				k8s.MetricsCheckIntervalAnnotationName: "-60",
 			},
 			expectedResult: 150 * time.Second,
 		},
@@ -148,7 +130,7 @@ func TestGetMetricsCheckInterval(t *testing.T) {
 
 	for _, test := range testcases {
 		t.Run(test.name, func(t *testing.T) {
-			actual := test.zeroScaler.getMetricsCheckInterval(test.deployment)
+			actual := test.zeroScaler.getMetricsCheckInterval("Deployment", "whatever", test.annotations)
 
 			assert.Equal(t, test.expectedResult, actual)
 		})
