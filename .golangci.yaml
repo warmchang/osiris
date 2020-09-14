@@ -14,7 +14,7 @@ linters:
   - goimports
   - golint
   - govet
-  - lll
+  # - lll
   - maligned
   - misspell
   - nakedret

@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"sync"
 	"time"
 
@@ -18,56 +16,46 @@ import (
 	"k8s.io/client-go/tools/cache"
 
 	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
-	"github.com/dailymotion/osiris/pkg/metrics"
 )
 
-const (
-	proxyContainerName = "osiris-proxy"
-	proxyPortName      = "osiris-metrics"
-)
-
-type metricsCollector struct {
-	kubeClient           kubernetes.Interface
+type metricsCollectorConfig struct {
 	appKind              string
 	appName              string
 	appNamespace         string
 	selector             labels.Selector
 	metricsCheckInterval time.Duration
-	podsInformer         cache.SharedIndexInformer
-	appPods              map[string]*corev1.Pod
-	appPodsLock          sync.Mutex
-	httpClient           *http.Client
-	cancelFunc           func()
+	scraperConfig        metricsScraperConfig
+}
+
+type metricsCollector struct {
+	config       metricsCollectorConfig
+	scraper      metricsScraper
+	kubeClient   kubernetes.Interface
+	podsInformer cache.SharedIndexInformer
+	appPods      map[string]*corev1.Pod
+	appPodsLock  sync.Mutex
+	cancelFunc   func()
 }
 
 func newMetricsCollector(
 	kubeClient kubernetes.Interface,
-	appKind string,
-	appName string,
-	appNamespace string,
-	selector labels.Selector,
-	metricsCheckInterval time.Duration,
-) *metricsCollector {
+	config metricsCollectorConfig,
+) (*metricsCollector, error) {
+	s, err := newMetricsScraper(config.scraperConfig)
+	if err != nil {
+		return nil, err
+	}
 	m := &metricsCollector{
-		kubeClient:           kubeClient,
-		appKind:              appKind,
-		appName:              appName,
-		appNamespace:         appNamespace,
-		selector:             selector,
-		metricsCheckInterval: metricsCheckInterval,
+		config:     config,
+		scraper:    s,
+		kubeClient: kubeClient,
 		podsInformer: k8s.PodsIndexInformer(
 			kubeClient,
-			appNamespace,
+			config.appNamespace,
 			nil,
-			selector,
+			config.selector,
 		),
 		appPods: map[string]*corev1.Pod{},
-		// A very aggressive timeout. When collecting metrics, we want to do it very
-		// quickly to minimize the possibility that some pods we've checked on have
-		// served requests while we've been checking on OTHER pods.
-		httpClient: &http.Client{
-			Timeout: 2 * time.Second,
-		},
 	}
 	m.podsInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: m.syncAppPod,
@@ -76,7 +64,7 @@ func newMetricsCollector(
 		},
 		DeleteFunc: m.syncDeletedAppPod,
 	})
-	return m
+	return m, nil
 }
 
 func (m *metricsCollector) run(ctx context.Context) {
@@ -86,16 +74,16 @@ func (m *metricsCollector) run(ctx context.Context) {
 		<-ctx.Done()
 		glog.Infof(
 			"Stopping metrics collection for %s %s in namespace %s",
-			m.appKind,
-			m.appName,
-			m.appNamespace,
+			m.config.appKind,
+			m.config.appName,
+			m.config.appNamespace,
 		)
 	}()
 	glog.Infof(
 		"Starting metrics collection for %s %s in namespace %s",
-		m.appKind,
-		m.appName,
-		m.appNamespace,
+		m.config.appKind,
+		m.config.appName,
+		m.config.appNamespace,
 	)
 	go m.podsInformer.Run(ctx.Done())
 	// When this exits, the cancel func will stop the informer
@@ -123,7 +111,7 @@ func (m *metricsCollector) syncDeletedAppPod(obj interface{}) {
 func (m *metricsCollector) collectMetrics(ctx context.Context) {
 	requestCountsByProxy := map[string]uint64{}
 	var lastTotalRequestCount uint64
-	ticker := time.NewTicker(m.metricsCheckInterval)
+	ticker := time.NewTicker(m.config.metricsCheckInterval)
 	defer ticker.Stop()
 	for {
 		select {
@@ -135,26 +123,17 @@ func (m *metricsCollector) collectMetrics(ctx context.Context) {
 			// all.
 			timer := time.NewTimer(3 * time.Second)
 			for _, pod := range m.appPods {
-				podMetricsPort, ok := getMetricsPort(pod)
-				if !ok {
-					mustNotDecide = true
-					continue
-				}
-				url := fmt.Sprintf(
-					"http://%s:%d/metrics",
-					pod.Status.PodIP,
-					podMetricsPort,
-				)
 				scrapeWG.Add(1)
-				go func() {
+				go func(pod *corev1.Pod) {
 					defer scrapeWG.Done()
 					// Get the results
-					prc, ok := m.scrape(url)
-					if !ok {
+					prc := m.scraper.Scrap(pod)
+					if prc == nil {
 						mustNotDecide = true
+					} else {
+						requestCountsByProxy[prc.ProxyID] = prc.RequestCount
 					}
-					requestCountsByProxy[prc.ProxyID] = prc.RequestCount
-				}()
+				}(pod)
 			}
 			m.appPodsLock.Unlock()
 			scrapeWG.Wait()
@@ -180,65 +159,12 @@ func (m *metricsCollector) collectMetrics(ctx context.Context) {
 	}
 }
 
-func getMetricsPort(pod *corev1.Pod) (int32, bool) {
-	for _, c := range pod.Spec.Containers {
-		if c.Name == proxyContainerName && len(c.Ports) > 0 {
-			for _, port := range c.Ports {
-				if port.Name == proxyPortName {
-					return port.ContainerPort, true
-				}
-			}
-		}
-	}
-	return 0, false
-}
-
-func (m *metricsCollector) scrape(
-	target string,
-) (metrics.ProxyRequestCount, bool) {
-	prc := metrics.ProxyRequestCount{}
-	// Requests made with this client time out after 2 seconds
-	resp, err := m.httpClient.Get(target)
-	if err != nil {
-		glog.Errorf("Error requesting metrics from %s: %s", target, err)
-		return prc, false
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		glog.Errorf(
-			"Received unexpected HTTP response code %d when requesting metrics "+
-				"from %s",
-			resp.StatusCode,
-			target,
-		)
-		return prc, false
-	}
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		glog.Errorf(
-			"Error reading metrics request response from %s: %s",
-			target,
-			err,
-		)
-		return prc, false
-	}
-	if err := json.Unmarshal(bodyBytes, &prc); err != nil {
-		glog.Errorf(
-			"Error umarshaling metrics request response from %s: %s",
-			target,
-			err,
-		)
-		return prc, false
-	}
-	return prc, true
-}
-
 func (m *metricsCollector) scaleToZero(ctx context.Context) {
 	glog.Infof(
 		"Scale to zero starting for %s %s in namespace %s",
-		m.appKind,
-		m.appName,
-		m.appNamespace,
+		m.config.appKind,
+		m.config.appName,
+		m.config.appNamespace,
 	)
 
 	patches := []k8s.PatchOperation{{
@@ -248,32 +174,32 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 	}}
 	patchesBytes, _ := json.Marshal(patches)
 	var err error
-	switch m.appKind {
+	switch m.config.appKind {
 	case "Deployment":
-		_, err = m.kubeClient.AppsV1().Deployments(m.appNamespace).Patch(
+		_, err = m.kubeClient.AppsV1().Deployments(m.config.appNamespace).Patch(
 			ctx,
-			m.appName,
+			m.config.appName,
 			k8s_types.JSONPatchType,
 			patchesBytes,
 			metav1.PatchOptions{},
 		)
 	case "StatefulSet":
-		_, err = m.kubeClient.AppsV1().StatefulSets(m.appNamespace).Patch(
+		_, err = m.kubeClient.AppsV1().StatefulSets(m.config.appNamespace).Patch(
 			ctx,
-			m.appName,
+			m.config.appName,
 			k8s_types.JSONPatchType,
 			patchesBytes,
 			metav1.PatchOptions{},
 		)
 	default:
-		err = fmt.Errorf("unknown kind '%s'", m.appKind)
+		err = fmt.Errorf("unknown kind '%s'", m.config.appKind)
 	}
 	if err != nil {
 		glog.Errorf(
 			"Error scaling %s %s in namespace %s to zero: %s",
-			m.appKind,
-			m.appName,
-			m.appNamespace,
+			m.config.appKind,
+			m.config.appName,
+			m.config.appNamespace,
 			err,
 		)
 		return
@@ -281,8 +207,8 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 
 	glog.Infof(
 		"Scaled %s %s in namespace %s to zero",
-		m.appKind,
-		m.appName,
-		m.appNamespace,
+		m.config.appKind,
+		m.config.appName,
+		m.config.appNamespace,
 	)
 }
