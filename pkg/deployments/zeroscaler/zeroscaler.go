@@ -2,6 +2,7 @@ package zeroscaler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -233,10 +234,16 @@ func (z *zeroscaler) ensureMetricsCollection(kind, namespace, name string,
 	z.collectorsLock.Lock()
 	defer z.collectorsLock.Unlock()
 	key := getKey(kind, namespace, name)
-	selector := labels.SelectorFromSet(labelSelector.MatchLabels)
-	metricsCheckInterval := z.getMetricsCheckInterval(kind, name, annotations)
+	config := metricsCollectorConfig{
+		appKind:              kind,
+		appName:              name,
+		appNamespace:         namespace,
+		selector:             labels.SelectorFromSet(labelSelector.MatchLabels),
+		scraperConfig:        getMetricsScraperConfig(kind, name, annotations),
+		metricsCheckInterval: z.getMetricsCheckInterval(kind, name, annotations),
+	}
 	if collector, ok := z.collectors[key]; !ok ||
-		shouldUpdateCollector(collector, selector, metricsCheckInterval) {
+		!reflect.DeepEqual(config, collector.config) {
 		if ok {
 			collector.stop()
 		}
@@ -246,16 +253,20 @@ func (z *zeroscaler) ensureMetricsCollection(kind, namespace, name string,
 			kind,
 			name,
 			namespace,
-			metricsCheckInterval.String(),
+			config.metricsCheckInterval.String(),
 		)
-		collector := newMetricsCollector(
-			z.kubeClient,
-			kind,
-			name,
-			namespace,
-			selector,
-			metricsCheckInterval,
-		)
+		collector, err := newMetricsCollector(z.kubeClient, config)
+		if err != nil {
+			glog.Errorf(
+				"Metrics collector for %s %s in namespace %s can't run; "+
+					"error: %s",
+				kind,
+				name,
+				namespace,
+				err,
+			)
+			return
+		}
 		go func() {
 			collector.run(z.ctx)
 			// Once the collector has run to completion (scaled to zero) remove it
@@ -283,6 +294,30 @@ func (z *zeroscaler) ensureNoMetricsCollection(kind, namespace, name string) {
 		collector.stop()
 		delete(z.collectors, key)
 	}
+}
+
+func getMetricsScraperConfig(
+	kind string,
+	name string,
+	annotations map[string]string,
+) metricsScraperConfig {
+	rawConfig, found := annotations[k8s.MetricsCollectorAnnotationName]
+	if !found {
+		return metricsScraperConfig{ScraperName: osirisScraperName}
+	}
+	var config metricsScraperConfig
+	if err := json.Unmarshal([]byte(rawConfig), &config); err != nil {
+		fmt.Printf(
+			"There was an error parsing metrics collector configuration "+
+				"from %s %s, falling back to the default config; "+
+				"error: %s",
+			kind,
+			name,
+			err,
+		)
+		return metricsScraperConfig{ScraperName: osirisScraperName}
+	}
+	return config
 }
 
 func (z *zeroscaler) getMetricsCheckInterval(
@@ -322,20 +357,6 @@ func (z *zeroscaler) getMetricsCheckInterval(
 		metricsCheckInterval = z.cfg.MetricsCheckInterval
 	}
 	return time.Duration(metricsCheckInterval) * time.Second
-}
-
-func shouldUpdateCollector(
-	collector *metricsCollector,
-	newSelector labels.Selector,
-	newMetricsCheckInterval time.Duration,
-) bool {
-	if !reflect.DeepEqual(newSelector, collector.selector) {
-		return true
-	}
-	if newMetricsCheckInterval != collector.metricsCheckInterval {
-		return true
-	}
-	return false
 }
 
 func getKey(kind, namespace, name string) string {
