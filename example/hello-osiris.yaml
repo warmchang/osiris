@@ -41,6 +41,7 @@ spec:
         app: hello-osiris
       annotations:
         osiris.dm.gg/enabled: "true"
+        osiris.dm.gg/ignoredPaths: "/first/path,/second-path"
     spec:
       containers:
       - name: hello-osiris
