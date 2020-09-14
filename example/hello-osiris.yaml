@@ -40,7 +40,7 @@ spec:
       labels:
         app: hello-osiris
       annotations:
-        osiris.dm.gg/enabled: "true"
+        osiris.dm.gg/collectMetrics: "true"
         osiris.dm.gg/ignoredPaths: "/first/path,/second-path"
     spec:
       containers:
