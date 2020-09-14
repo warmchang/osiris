@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	IgnoredPathsAnnotationName         = "osiris.dm.gg/ignoredPaths"
 	osirisEnabledAnnotationName        = "osiris.dm.gg/enabled"
 	metricsCheckIntervalAnnotationName = "osiris.dm.gg/metricsCheckInterval"
 )

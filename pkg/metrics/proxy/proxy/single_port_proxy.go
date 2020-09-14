@@ -18,12 +18,14 @@ type singlePortProxy struct {
 	requestCount        *uint64
 	srv                 *http.Server
 	proxyRequestHandler *httputil.ReverseProxy
+	ignoredPaths        map[string]struct{}
 }
 
 func newSinglePortProxy(
 	proxyPort int,
 	appPort int,
 	requestCount *uint64,
+	ignoredPaths map[string]struct{},
 ) (*singlePortProxy, error) {
 	targetURL, err := url.Parse(fmt.Sprintf("http://localhost:%d", appPort))
 	if err != nil {
@@ -38,6 +40,7 @@ func newSinglePortProxy(
 			Handler: mux,
 		},
 		proxyRequestHandler: httputil.NewSingleHostReverseProxy(targetURL),
+		ignoredPaths:        ignoredPaths,
 	}
 	mux.HandleFunc("/", s.handleRequest)
 	return s, nil
@@ -88,12 +91,25 @@ func (s *singlePortProxy) handleRequest(
 ) {
 	defer r.Body.Close()
 
-	// We ensure that kubelet requests like health checks
-	// are not instrumented by the sidecar proxy.
-	userAgent := r.Header.Get("User-Agent")
-	if !strings.Contains(userAgent, "kube-probe") {
+	if !s.isIgnoredRequest(r) {
 		atomic.AddUint64(s.requestCount, 1)
 	}
 
 	s.proxyRequestHandler.ServeHTTP(w, r)
+}
+
+func (s *singlePortProxy) isIgnoredRequest(r *http.Request) bool {
+	return s.isIgnoredPath(r) || isKubeProbe(r)
+}
+
+func (s *singlePortProxy) isIgnoredPath(r *http.Request) bool {
+	if r.URL == nil || len(r.URL.Path) == 0 {
+		return false
+	}
+	_, found := s.ignoredPaths[r.URL.Path]
+	return found
+}
+
+func isKubeProbe(r *http.Request) bool {
+	return strings.Contains(r.Header.Get("User-Agent"), "kube-probe")
 }
