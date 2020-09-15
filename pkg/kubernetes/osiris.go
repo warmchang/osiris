@@ -9,20 +9,27 @@ const (
 	IgnoredPathsAnnotationName         = "osiris.dm.gg/ignoredPaths"
 	MetricsCollectorAnnotationName     = "osiris.dm.gg/metricsCollector"
 	MetricsCheckIntervalAnnotationName = "osiris.dm.gg/metricsCheckInterval"
-	osirisEnabledAnnotationName        = "osiris.dm.gg/enabled"
+	enableScalingAnnotationName        = "osiris.dm.gg/enableScaling"
 	collectMetricsAnnotationName       = "osiris.dm.gg/collectMetrics"
+	manageEndpointsAnnotationName      = "osiris.dm.gg/manageEndpoints"
 )
 
-// ResourceIsOsirisEnabled checks the annotations to see if the
-// kube resource is enabled for osiris or not.
-func ResourceIsOsirisEnabled(annotations map[string]string) bool {
-	return annotationBooleanValue(annotations, osirisEnabledAnnotationName)
+// WorkloadIsEligibleForAutoScaling checks the annotations to see if the
+// workload (deployment or statefulset) is eligible for auto-scaling with osiris or not.
+func WorkloadIsEligibleForAutoScaling(annotations map[string]string) bool {
+	return annotationBooleanValue(annotations, enableScalingAnnotationName)
 }
 
 // PodIsEligibleForProxyInjection checks the annotations to see if the
 // pod is eligible for proxy injection or not.
 func PodIsEligibleForProxyInjection(annotations map[string]string) bool {
 	return annotationBooleanValue(annotations, collectMetricsAnnotationName)
+}
+
+// ServiceIsEligibleForEndpointsManagement checks the annotations to see if the
+// service is eligible for management of its endpoints by osiris or not.
+func ServiceIsEligibleForEndpointsManagement(annotations map[string]string) bool {
+	return annotationBooleanValue(annotations, manageEndpointsAnnotationName)
 }
 
 func annotationBooleanValue(annotations map[string]string, key string) bool {

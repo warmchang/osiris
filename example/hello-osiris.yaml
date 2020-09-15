@@ -5,7 +5,7 @@ metadata:
   labels:
     app: hello-osiris
   annotations:
-    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/manageEndpoints: "true"
     osiris.dm.gg/deployment: hello-osiris
     osiris.dm.gg/loadBalancerHostname: hello-osiris.contoso.io
 spec:
@@ -27,7 +27,7 @@ metadata:
   labels:
     app: hello-osiris
   annotations:
-    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/enableScaling: "true"
     osiris.dm.gg/minReplicas: "1"
     osiris.dm.gg/metricsCheckInterval: "120" # seconds
 spec:
