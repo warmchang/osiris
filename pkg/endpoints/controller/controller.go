@@ -117,7 +117,7 @@ func (c *controller) Run(ctx context.Context) {
 // be prevented for non-Osiris-enabled services.
 func (c *controller) syncAppService(obj interface{}) {
 	svc := obj.(*corev1.Service)
-	if k8s.ResourceIsOsirisEnabled(svc.Annotations) {
+	if k8s.ServiceIsEligibleForEndpointsManagement(svc.Annotations) {
 		glog.Infof(
 			"Notified about new or updated Osiris-enabled service %s in namespace %s",
 			svc.Name,

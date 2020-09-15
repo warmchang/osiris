@@ -127,7 +127,7 @@ metadata:
   namespace: my-aoo
   name: my-app
   annotations:
-    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/enableScaling: "true"
 spec:
   replicas: 1
   selector:
@@ -163,7 +163,7 @@ metadata:
   namespace: my-namespace
   name: my-app
   annotations:
-    osiris.dm.gg/enabled: "true"
+    osiris.dm.gg/manageEndpoints: "true"
     osiris.dm.gg/deployment: my-app
 spec:
   selector:
@@ -181,7 +181,7 @@ The following table lists the supported annotations for Kubernetes `Deployments`
 
 | Annotation | Description | Default |
 | ---------- | ----------- | ------- |
-| `osiris.dm.gg/enabled` | Enable the zeroscaler component to scrape and analyze metrics from the deployment's or statefulSet's pods and scale the deployment/statefulSet to zero when idle. Allowed values: `y`, `yes`, `true`, `on`, `1`. | _no value_ (= disabled) |
+| `osiris.dm.gg/enableScaling` | Enable the zeroscaler component to scrape and analyze metrics from the deployment's or statefulSet's pods and scale the deployment/statefulSet to zero when idle. Allowed values: `y`, `yes`, `true`, `on`, `1`. | _no value_ (= disabled) |
 | `osiris.dm.gg/minReplicas` | The minimum number of replicas to set on the deployment/statefulSet when Osiris will scale up. If you set `2`, Osiris will scale the deployment/statefulSet from `0` to `2` replicas directly. Osiris won't collect metrics from deployments/statefulSets which have more than `minReplicas` replicas - to avoid useless collections of metrics. | `1` |
 | `osiris.dm.gg/metricsCheckInterval` | The interval in which Osiris would repeatedly track the pod http request metrics. The value is the number of seconds of the interval. Note that this value override the global value defined by the `zeroscaler.metricsCheckInterval` Helm value. | _value of the `zeroscaler.metricsCheckInterval` Helm value_ |
 | `osiris.dm.gg/metricsCollector` | Configure the collection of metrics for a pod. The value is a JSON object with at least a `type` string, and an optional `implementation` object. See the *Metrics Scraping* section for more. | `{ "type": "osiris" }` |
@@ -201,7 +201,7 @@ The following table lists the supported annotations for Kubernetes `Services` an
 
 | Annotation | Description | Default |
 | ---------- | ----------- | ------- |
-| `osiris.dm.gg/enabled` | Enable this service's endpoints to be managed by the Osiris endpoints controller. Allowed values: `y`, `yes`, `true`, `on`, `1`. | _no value_ (= disabled) |
+| `osiris.dm.gg/manageEndpoints` | Enable this service's endpoints to be managed by the Osiris endpoints controller. Allowed values: `y`, `yes`, `true`, `on`, `1`. | _no value_ (= disabled) |
 | `osiris.dm.gg/deployment` | Name of the deployment which is behind this service. This is _required_ to map the service with its deployment. | _no value_ |
 | `osiris.dm.gg/statefulset` | Name of the statefulSet which is behind this service. This is _required_ to map the service with its statefulSet. | _no value_ |
 | `osiris.dm.gg/loadBalancerHostname` | Map requests coming from a specific hostname to this service. Note that if you have multiple hostnames, you can set them with different annotations, using `osiris.dm.gg/loadBalancerHostname-1`, `osiris.dm.gg/loadBalancerHostname-2`, ... | _no value_ |

@@ -27,7 +27,7 @@ func getServicePatchOperations(
 	patchOps := []kubernetes.PatchOperation{}
 
 	// Service is Osiris-enabled... make it so...
-	if kubernetes.ResourceIsOsirisEnabled(svc.Annotations) {
+	if kubernetes.ServiceIsEligibleForEndpointsManagement(svc.Annotations) {
 
 		glog.Infof("Hijacking service %s", svc.Name)
 

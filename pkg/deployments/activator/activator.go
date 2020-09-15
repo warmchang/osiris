@@ -107,7 +107,7 @@ func (a *activator) syncService(obj interface{}) {
 	defer a.indicesLock.Unlock()
 	svc := obj.(*corev1.Service)
 	svcKey := getKey(svc.Namespace, "Service", svc.Name)
-	if k8s.ResourceIsOsirisEnabled(svc.Annotations) {
+	if k8s.ServiceIsEligibleForEndpointsManagement(svc.Annotations) {
 		a.services[svcKey] = svc
 	} else {
 		delete(a.services, svcKey)

@@ -213,7 +213,7 @@ func (h *hijacker) handleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func validateService(svc *corev1.Service) error {
-	if kubernetes.ResourceIsOsirisEnabled(svc.Annotations) {
+	if kubernetes.ServiceIsEligibleForEndpointsManagement(svc.Annotations) {
 		_, deploymentPresent := svc.Annotations["osiris.dm.gg/deployment"]
 		_, statefulSetPresent := svc.Annotations["osiris.dm.gg/statefulset"]
 		if !deploymentPresent && !statefulSetPresent {

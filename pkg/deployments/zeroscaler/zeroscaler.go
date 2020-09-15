@@ -93,7 +93,7 @@ func (z *zeroscaler) Run(ctx context.Context) {
 
 func (z *zeroscaler) syncDeployment(obj interface{}) {
 	deployment := obj.(*appsv1.Deployment)
-	if k8s.ResourceIsOsirisEnabled(deployment.Annotations) {
+	if k8s.WorkloadIsEligibleForAutoScaling(deployment.Annotations) {
 		glog.Infof(
 			"Notified about new or updated Osiris-enabled deployment %s in "+
 				"namespace %s",
@@ -147,7 +147,7 @@ func (z *zeroscaler) syncDeployment(obj interface{}) {
 
 func (z *zeroscaler) syncStatefulSet(obj interface{}) {
 	statefulSet := obj.(*appsv1.StatefulSet)
-	if k8s.ResourceIsOsirisEnabled(statefulSet.Annotations) {
+	if k8s.WorkloadIsEligibleForAutoScaling(statefulSet.Annotations) {
 		glog.Infof(
 			"Notified about new or updated Osiris-enabled statefulSet %s in "+
 				"namespace %s",

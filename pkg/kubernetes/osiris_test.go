@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestResourceIsOsirisEnabled(t *testing.T) {
+func TestAnnotationBooleanValue(t *testing.T) {
 	testcases := []struct {
 		name           string
 		annotations    map[string]string
@@ -13,35 +13,35 @@ func TestResourceIsOsirisEnabled(t *testing.T) {
 		{
 			name: "map with osiris enabled entry and value 1",
 			annotations: map[string]string{
-				osirisEnabledAnnotationName: "1",
+				enableScalingAnnotationName: "1",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value true",
 			annotations: map[string]string{
-				osirisEnabledAnnotationName: "true",
+				enableScalingAnnotationName: "true",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value on",
 			annotations: map[string]string{
-				osirisEnabledAnnotationName: "on",
+				enableScalingAnnotationName: "on",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value y",
 			annotations: map[string]string{
-				osirisEnabledAnnotationName: "y",
+				enableScalingAnnotationName: "y",
 			},
 			expectedResult: true,
 		},
 		{
 			name: "map with osiris enabled entry and value yes",
 			annotations: map[string]string{
-				osirisEnabledAnnotationName: "yes",
+				enableScalingAnnotationName: "yes",
 			},
 			expectedResult: true,
 		},
@@ -54,7 +54,7 @@ func TestResourceIsOsirisEnabled(t *testing.T) {
 		{
 			name: "map with osiris enabled entry and invalid value",
 			annotations: map[string]string{
-				osirisEnabledAnnotationName: "yee",
+				enableScalingAnnotationName: "yee",
 			},
 			expectedResult: false,
 		},
@@ -62,10 +62,10 @@ func TestResourceIsOsirisEnabled(t *testing.T) {
 
 	for _, test := range testcases {
 		t.Run(test.name, func(t *testing.T) {
-			actual := ResourceIsOsirisEnabled(test.annotations)
+			actual := annotationBooleanValue(test.annotations, enableScalingAnnotationName)
 			if actual != test.expectedResult {
 				t.Errorf(
-					"expected ResourceIsOsirisEnabled to return %t, but got %t",
+					"expected annotationBooleanValue to return %t, but got %t",
 					test.expectedResult, actual)
 			}
 		})
