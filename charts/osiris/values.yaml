@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 image:
   ## Image location, NOT including the tag
-  repository: docker.pkg.github.com/dailymotion/osiris/osiris
+  repository: ghcr.io/dailymotion/osiris
   ## Image tag. Optional, default to the chart's AppVersion
   tag:
   ## Image pull policy

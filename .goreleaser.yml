@@ -21,11 +21,11 @@ dockers:
     extra_files:
       - bin/
     image_templates:
-      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:{{ .Version }}"
-      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:{{ .Tag }}"
-      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:v{{ .Major }}"
-      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:v{{ .Major }}.{{ .Minor }}"
-      - "docker.pkg.github.com/dailymotion/osiris/{{.ProjectName}}:latest"
+      - "ghcr.io/dailymotion/{{.ProjectName}}:{{ .Version }}"
+      - "ghcr.io/dailymotion/{{.ProjectName}}:{{ .Tag }}"
+      - "ghcr.io/dailymotion/{{.ProjectName}}:v{{ .Major }}"
+      - "ghcr.io/dailymotion/{{.ProjectName}}:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/dailymotion/{{.ProjectName}}:latest"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
