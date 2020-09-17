@@ -89,7 +89,7 @@ func (i *injector) getPodPatchOperations(
 			path = "/spec/initContainers"
 			value = []corev1.Container{proxyInitContainer}
 		} else {
-			path = "/spec/initContainers/-"
+			path = "/spec/initContainers/0"
 			value = proxyInitContainer
 		}
 
@@ -168,7 +168,7 @@ func (i *injector) getPodPatchOperations(
 			path = "/spec/containers"
 			value = []corev1.Container{proxyContainer}
 		} else {
-			path = "/spec/containers/-"
+			path = "/spec/containers/0"
 			value = proxyContainer
 		}
 
