@@ -153,7 +153,9 @@ func (i *injector) getPodPatchOperations(
 						Port: intstr.FromInt(int(metricsAndHealthPort)),
 					},
 				},
-				PeriodSeconds: 1,
+				PeriodSeconds:    1,
+				SuccessThreshold: 1,
+				FailureThreshold: 5,
 			},
 		}
 
