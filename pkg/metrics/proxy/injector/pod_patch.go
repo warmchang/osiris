@@ -141,16 +141,19 @@ func (i *injector) getPodPatchOperations(
 			},
 			LivenessProbe: &corev1.Probe{
 				Handler: corev1.Handler{
-					HTTPGet: &corev1.HTTPGetAction{
+					TCPSocket: &corev1.TCPSocketAction{
 						Port: intstr.FromInt(int(metricsAndHealthPort)),
-						Path: "/healthz",
 					},
 				},
+				PeriodSeconds:    1,
+				SuccessThreshold: 1,
+				FailureThreshold: 5,
 			},
 			ReadinessProbe: &corev1.Probe{
 				Handler: corev1.Handler{
-					TCPSocket: &corev1.TCPSocketAction{
+					HTTPGet: &corev1.HTTPGetAction{
 						Port: intstr.FromInt(int(metricsAndHealthPort)),
+						Path: "/healthz",
 					},
 				},
 				PeriodSeconds:    1,
