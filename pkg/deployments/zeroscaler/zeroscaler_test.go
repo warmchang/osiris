@@ -55,13 +55,9 @@ func TestGetMetricsScraperConfig(t *testing.T) {
 							"implementation": {
 								"port": 8080,
 								"path": "/metrics",
-								"openedConnectionsMetricName": "connections",
-								"openedConnectionsMetricLabels": {
-									"type": "opened"
-								},
-								"closedConnectionsMetricName": "connections",
-								"closedConnectionsMetricLabels": {
-									"type": "closed"
+								"requestCountMetricName": "requests",
+								"requestCountMetricLabels": {
+									"label": "key"
 								}
 							}
 						}
@@ -73,13 +69,9 @@ func TestGetMetricsScraperConfig(t *testing.T) {
 				{
 					"port": 8080,
 					"path": "/metrics",
-					"openedConnectionsMetricName": "connections",
-					"openedConnectionsMetricLabels": {
-						"type": "opened"
-					},
-					"closedConnectionsMetricName": "connections",
-					"closedConnectionsMetricLabels": {
-						"type": "closed"
+					"requestCountMetricName": "requests",
+					"requestCountMetricLabels": {
+						"label": "key"
 					}
 				}
 				`),
