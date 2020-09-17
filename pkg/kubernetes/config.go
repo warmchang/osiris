@@ -5,6 +5,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
+	// required to connect to a GKE cluster when running locally
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
 const envconfigPrefix = "KUBE"
