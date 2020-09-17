@@ -1,6 +1,7 @@
 dist/
 test/
 .cr-release-packages/
+/osiris
 
 # VS Code files
 .vscode/

@@ -1,3 +1,5 @@
+# cloud.google.com/go v0.65.0
+cloud.google.com/go/compute/metadata
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/go-logr/logr v0.2.1
@@ -82,7 +84,10 @@ golang.org/x/net/idna
 # golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 ## explicit
 golang.org/x/oauth2
+golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
+golang.org/x/oauth2/jws
+golang.org/x/oauth2/jwt
 # golang.org/x/sys v0.0.0-20200909081042-eff7692f9009
 ## explicit
 golang.org/x/sys/internal/unsafeheader
@@ -97,10 +102,13 @@ golang.org/x/text/unicode/norm
 ## explicit
 golang.org/x/time/rate
 # google.golang.org/appengine v1.6.6
+google.golang.org/appengine
 google.golang.org/appengine/internal
+google.golang.org/appengine/internal/app_identity
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/modules
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
@@ -276,8 +284,10 @@ k8s.io/client-go/pkg/apis/clientauthentication/v1alpha1
 k8s.io/client-go/pkg/apis/clientauthentication/v1beta1
 k8s.io/client-go/pkg/version
 k8s.io/client-go/plugin/pkg/client/auth/exec
+k8s.io/client-go/plugin/pkg/client/auth/gcp
 k8s.io/client-go/rest
 k8s.io/client-go/rest/watch
+k8s.io/client-go/third_party/forked/golang/template
 k8s.io/client-go/tools/auth
 k8s.io/client-go/tools/cache
 k8s.io/client-go/tools/clientcmd
@@ -292,6 +302,7 @@ k8s.io/client-go/util/cert
 k8s.io/client-go/util/connrotation
 k8s.io/client-go/util/flowcontrol
 k8s.io/client-go/util/homedir
+k8s.io/client-go/util/jsonpath
 k8s.io/client-go/util/keyutil
 k8s.io/client-go/util/workqueue
 # k8s.io/klog/v2 v2.3.0
