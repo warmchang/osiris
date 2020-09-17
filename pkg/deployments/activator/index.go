@@ -5,6 +5,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"regexp"
+	"strings"
 
 	"github.com/golang/glog"
 )
@@ -28,11 +29,11 @@ func (a *activator) updateIndex() {
 		)
 		if deploymentName, ok :=
 			svc.Annotations["osiris.dm.gg/deployment"]; ok {
-			name = deploymentName
+			name = cleanAnnotationValue(deploymentName)
 			kind = appKindDeployment
 		} else if statefulSetName, ok :=
 			svc.Annotations["osiris.dm.gg/statefulset"]; ok {
-			name = statefulSetName
+			name = cleanAnnotationValue(statefulSetName)
 			kind = appKindStatefulSet
 		}
 		if len(name) == 0 {
@@ -113,7 +114,8 @@ func (a *activator) updateIndex() {
 				// ^osiris\.dm\.gg/loadBalancerHostname(?:-\d+)?$
 				for k, v := range svc.Annotations {
 					if loadBalancerHostnameAnnotationRegex.MatchString(k) {
-						appsByHost[v] = app
+						hostname := cleanAnnotationValue(v)
+						appsByHost[hostname] = app
 					}
 				}
 			}
@@ -122,7 +124,8 @@ func (a *activator) updateIndex() {
 				// ^osiris\.dm\.gg/ingressHostname(?:-\d+)?$
 				for k, v := range svc.Annotations {
 					if ingressHostnameAnnotationRegex.MatchString(k) {
-						appsByHost[v] = app
+						hostname := cleanAnnotationValue(v)
+						appsByHost[hostname] = app
 					}
 				}
 			}
@@ -148,10 +151,18 @@ func (a *activator) updateIndex() {
 			// ^osiris\.dm\.gg/loadBalancerHostname(?:-\d+)?$
 			for k, v := range svc.Annotations {
 				if loadBalancerHostnameAnnotationRegex.MatchString(k) {
-					appsByHost[fmt.Sprintf("%s:%d", v, port.Port)] = app
+					hostname := cleanAnnotationValue(v)
+					appsByHost[fmt.Sprintf("%s:%d", hostname, port.Port)] = app
 				}
 			}
 		}
 	}
 	a.appsByHost = appsByHost
+}
+
+func cleanAnnotationValue(rawValue string) string {
+	value := strings.TrimSpace(rawValue)
+	value = strings.TrimLeft(value, "'")
+	value = strings.TrimRight(value, "'")
+	return value
 }
