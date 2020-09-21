@@ -207,7 +207,6 @@ The following table lists the supported annotations for Kubernetes `Services` an
 | `osiris.dm.gg/loadBalancerHostname` | Map requests coming from a specific hostname to this service. Note that if you have multiple hostnames, you can set them with different annotations, using `osiris.dm.gg/loadBalancerHostname-1`, `osiris.dm.gg/loadBalancerHostname-2`, ... | _no value_ |
 | `osiris.dm.gg/ingressHostname` | Map requests coming from a specific hostname to this service. If you use an ingress in front of your service, this is required to create a link between the ingress and the service. Note that if you have multiple hostnames, you can set them with different annotations, using `osiris.dm.gg/ingressHostname-1`, `osiris.dm.gg/ingressHostname-2`, ... | _no value_ |
 | `osiris.dm.gg/ingressDefaultPort` | Custom service port when the request comes from an ingress. Default behaviour if there are more than 1 port on the service, is to look for a port named `http`, and fallback to the port `80`. Set this if you have multiple ports and using a non-standard port with a non-standard name. | _no value_ |
-| `osiris.ddm.gg/tlsPort` | Custom port for TLS-secured requests. Default behaviour if there are more than 1 port on the service, is to look for a port named `https`, and fallback to the port `443`. Set this if you have multiple ports and using a non-standard TLS port with a non-standard name. | _no value_ |
 
 Note that you might see an `osiris.dm.gg/selector` annotation - this is for internal use only, and you shouldn't try to set/update or delete it.
 
