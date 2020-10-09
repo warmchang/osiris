@@ -21,11 +21,11 @@ dockers:
     extra_files:
       - bin/
     image_templates:
-      - "ghcr.io/dailymotion/{{.ProjectName}}:{{ .Version }}"
-      - "ghcr.io/dailymotion/{{.ProjectName}}:{{ .Tag }}"
-      - "ghcr.io/dailymotion/{{.ProjectName}}:v{{ .Major }}"
-      - "ghcr.io/dailymotion/{{.ProjectName}}:v{{ .Major }}.{{ .Minor }}"
-      - "ghcr.io/dailymotion/{{.ProjectName}}:latest"
+      - "ghcr.io/dailymotion-oss/{{.ProjectName}}:{{ .Version }}"
+      - "ghcr.io/dailymotion-oss/{{.ProjectName}}:{{ .Tag }}"
+      - "ghcr.io/dailymotion-oss/{{.ProjectName}}:v{{ .Major }}"
+      - "ghcr.io/dailymotion-oss/{{.ProjectName}}:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/dailymotion-oss/{{.ProjectName}}:latest"
     build_flag_templates:
       - "--pull"
       - "--label=org.opencontainers.image.created={{.Date}}"
