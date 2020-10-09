@@ -5,9 +5,9 @@ import (
 
 	"github.com/golang/glog"
 
-	endpoints "github.com/dailymotion/osiris/pkg/endpoints/controller"
-	"github.com/dailymotion/osiris/pkg/kubernetes"
-	"github.com/dailymotion/osiris/pkg/version"
+	endpoints "github.com/dailymotion-oss/osiris/pkg/endpoints/controller"
+	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/version"
 )
 
 func RunEndpointsController(ctx context.Context) {

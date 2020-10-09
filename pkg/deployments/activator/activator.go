@@ -12,8 +12,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 
-	"github.com/dailymotion/osiris/pkg/healthz"
-	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/healthz"
+	k8s "github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 type Activator interface {

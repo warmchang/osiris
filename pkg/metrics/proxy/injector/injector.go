@@ -14,8 +14,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 
-	"github.com/dailymotion/osiris/pkg/healthz"
-	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/healthz"
+	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 const port = 5000

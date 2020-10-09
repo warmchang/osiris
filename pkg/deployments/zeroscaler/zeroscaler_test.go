@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
+	k8s "github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 func TestGetMetricsScraperConfig(t *testing.T) {

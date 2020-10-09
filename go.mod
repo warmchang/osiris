@@ -1,4 +1,4 @@
-module github.com/dailymotion/osiris
+module github.com/dailymotion-oss/osiris
 
 go 1.15
 

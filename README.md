@@ -1,6 +1,6 @@
 # Osiris - A general purpose, Scale to Zero component for Kubernetes
 
-**This is a fork of the original [deislabs' Osiris](https://github.com/dailymotion/osiris)**.
+**This is a fork of the original [deislabs' Osiris](https://github.com/deislabs/osiris)**.
 
 It was forked before the [HTTPS and HTTP/2 support PR](https://github.com/deislabs/osiris/pull/27),
 because we observed [failed requests with the proxy](https://github.com/deislabs/osiris/issues/45)
@@ -81,7 +81,7 @@ Prerequisites:
 First, add the Osiris charts repository:
 
 ```
-helm repo add osiris https://dailymotion.github.io/osiris/charts
+helm repo add osiris https://dailymotion-oss.github.io/osiris/charts
 ```
 
 And then install it:
@@ -285,4 +285,4 @@ Osiris follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blo
 
 ## Credit 
 
-[Deislabs](https://github.com/deislabs) for their original work on [Osiris](https://github.com/dailymotion/osiris).
+[Deislabs](https://github.com/deislabs) for their original work on [Osiris](https://github.com/deislabs/osiris).

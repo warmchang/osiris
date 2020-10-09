@@ -5,8 +5,8 @@ import (
 
 	"github.com/golang/glog"
 
-	endpoints "github.com/dailymotion/osiris/pkg/endpoints/hijacker"
-	"github.com/dailymotion/osiris/pkg/version"
+	endpoints "github.com/dailymotion-oss/osiris/pkg/endpoints/hijacker"
+	"github.com/dailymotion-oss/osiris/pkg/version"
 )
 
 func RunEndpointsHijacker(ctx context.Context) {

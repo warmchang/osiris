@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/dailymotion/osiris/cmd"
-	"github.com/dailymotion/osiris/pkg/signals"
+	"github.com/dailymotion-oss/osiris/cmd"
+	"github.com/dailymotion-oss/osiris/pkg/signals"
 )
 
 func main() {

@@ -15,7 +15,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 
-	k8s "github.com/dailymotion/osiris/pkg/kubernetes"
+	k8s "github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 type metricsCollectorConfig struct {

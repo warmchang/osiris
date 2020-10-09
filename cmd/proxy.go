@@ -5,8 +5,8 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/dailymotion/osiris/pkg/metrics/proxy/proxy"
-	"github.com/dailymotion/osiris/pkg/version"
+	"github.com/dailymotion-oss/osiris/pkg/metrics/proxy/proxy"
+	"github.com/dailymotion-oss/osiris/pkg/version"
 )
 
 func RunProxy(ctx context.Context) {

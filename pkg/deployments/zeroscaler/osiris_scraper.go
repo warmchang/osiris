@@ -10,7 +10,7 @@ import (
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/dailymotion/osiris/pkg/metrics"
+	"github.com/dailymotion-oss/osiris/pkg/metrics"
 )
 
 const (

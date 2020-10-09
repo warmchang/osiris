@@ -11,8 +11,8 @@ import (
 	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
 
-	"github.com/dailymotion/osiris/pkg/healthz"
-	"github.com/dailymotion/osiris/pkg/metrics"
+	"github.com/dailymotion-oss/osiris/pkg/healthz"
+	"github.com/dailymotion-oss/osiris/pkg/metrics"
 )
 
 type Proxy interface {
