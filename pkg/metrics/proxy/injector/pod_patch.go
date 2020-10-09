@@ -10,7 +10,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 const (

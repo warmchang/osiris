@@ -7,9 +7,9 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X github.com/dailymotion/osiris/pkg/version.version={{.Version}}
-      - -X github.com/dailymotion/osiris/pkg/version.commit={{.Commit}}
-      - -X github.com/dailymotion/osiris/pkg/version.date={{.Date}}
+      - -X github.com/dailymotion-oss/osiris/pkg/version.version={{.Version}}
+      - -X github.com/dailymotion-oss/osiris/pkg/version.commit={{.Commit}}
+      - -X github.com/dailymotion-oss/osiris/pkg/version.date={{.Date}}
     env:
       - CGO_ENABLED=0
 

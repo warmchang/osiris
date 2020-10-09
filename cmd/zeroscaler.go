@@ -5,9 +5,9 @@ import (
 
 	"github.com/golang/glog"
 
-	deployments "github.com/dailymotion/osiris/pkg/deployments/zeroscaler"
-	"github.com/dailymotion/osiris/pkg/kubernetes"
-	"github.com/dailymotion/osiris/pkg/version"
+	deployments "github.com/dailymotion-oss/osiris/pkg/deployments/zeroscaler"
+	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/version"
 )
 
 func RunZeroScaler(ctx context.Context) {

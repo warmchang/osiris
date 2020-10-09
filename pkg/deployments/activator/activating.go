@@ -9,7 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	k8s_types "k8s.io/apimachinery/pkg/types"
 
-	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 func (a *activator) activateDeployment(

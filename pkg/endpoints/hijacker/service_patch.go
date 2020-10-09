@@ -7,7 +7,7 @@ import (
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/dailymotion/osiris/pkg/kubernetes"
+	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
 
 // getServicePatchOperations returns a slice of patch operations that will
