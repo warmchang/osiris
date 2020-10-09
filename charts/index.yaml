@@ -18,359 +18,359 @@ entries:
     created: "2020-10-07T09:07:10.403997026Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: adaba1f6580b215e7895cd77ff109c1b359700eb2468babfdc93f821a945a0bf
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.30/osiris-0.0.30.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.30/osiris-0.0.30.tgz
     version: 0.0.30
   - apiVersion: v1
     appVersion: 0.0.29
     created: "2020-10-02T07:02:36.583041636Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 46a147cae2c331db58a51e356fc9aba5a42be64ae5615fbc6f7321df090f0325
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.29/osiris-0.0.29.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.29/osiris-0.0.29.tgz
     version: 0.0.29
   - apiVersion: v1
     appVersion: 0.0.28
     created: "2020-10-02T06:52:49.115306729Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: b527d94812c55e1c6923e866f3fa9197be5be1debe0d173a7b92fb75288449df
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.28/osiris-0.0.28.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.28/osiris-0.0.28.tgz
     version: 0.0.28
   - apiVersion: v1
     appVersion: 0.0.27
     created: "2020-09-21T14:38:19.489471721Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 96728be44968e1437c99a420efa4dfd83bb5d739d6c0fb366b615842960edeca
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.27/osiris-0.0.27.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.27/osiris-0.0.27.tgz
     version: 0.0.27
   - apiVersion: v1
     appVersion: 0.0.26
     created: "2020-09-21T09:17:23.431812067Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 1b1a3d1aeb07c9b18c1b0d0bc6600b1e48a686d2147b6a18811cdce21dc510e7
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.26/osiris-0.0.26.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.26/osiris-0.0.26.tgz
     version: 0.0.26
   - apiVersion: v1
     appVersion: 0.0.25
     created: "2020-09-17T15:38:34.349191095Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 3f366a0ce1a10190f63919052dfc9b833e85f3f23f83bee981da9750f04318d7
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.25/osiris-0.0.25.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.25/osiris-0.0.25.tgz
     version: 0.0.25
   - apiVersion: v1
     appVersion: 0.0.24
     created: "2020-09-17T14:57:09.108607335Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 0f1e2cc95b4b31120beb48a5763bcf04d38c5944c9c0b2f824f2288ac12db057
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.24/osiris-0.0.24.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.24/osiris-0.0.24.tgz
     version: 0.0.24
   - apiVersion: v1
     appVersion: 0.0.23
     created: "2020-09-17T13:43:34.588177999Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 79b446c611d2348341ff7123ee0218f097e540f261dca083bf59a4db6f1c95fe
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.23/osiris-0.0.23.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.23/osiris-0.0.23.tgz
     version: 0.0.23
   - apiVersion: v1
     appVersion: 0.0.22
     created: "2020-09-17T13:00:49.38110436Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 5b5e9c5e3b60ed311e4a59a633d1850f1abbce8f584cd0698fde4d3ff210e2f1
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.22/osiris-0.0.22.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.22/osiris-0.0.22.tgz
     version: 0.0.22
   - apiVersion: v1
     appVersion: 0.0.21
     created: "2020-09-17T12:51:16.218001896Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: f46abf36aaec8f5dc33f28051bc0432e83545866ffb8e1d8dc7601824988e43a
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.21/osiris-0.0.21.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.21/osiris-0.0.21.tgz
     version: 0.0.21
   - apiVersion: v1
     appVersion: 0.0.20
     created: "2020-09-17T12:47:01.671041718Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 772d4ad7e9ce38e8d7e3c0b6f3c10e71e4c26c9f96f81e88d29d1984c613b564
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.20/osiris-0.0.20.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.20/osiris-0.0.20.tgz
     version: 0.0.20
   - apiVersion: v1
     appVersion: 0.0.19
     created: "2020-09-15T15:01:44.874655998Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 49e48422a8048505a8391b1333ebfe6ed2430beef26e34945f890370cb523eec
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.19/osiris-0.0.19.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.19/osiris-0.0.19.tgz
     version: 0.0.19
   - apiVersion: v1
     appVersion: 0.0.18
     created: "2020-09-15T07:31:55.161262629Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 8f33ed314c7caa5954f3b8a19f1af9f79096a5e088db791869a9fe1ed6c29920
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.18/osiris-0.0.18.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.18/osiris-0.0.18.tgz
     version: 0.0.18
   - apiVersion: v1
     appVersion: 0.0.17
     created: "2020-09-14T15:41:44.049396829Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 267c9ca9bb09f8ba377671541cd6dd812eb203719cfaa5417c861d40ea9f1bdd
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.17/osiris-0.0.17.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.17/osiris-0.0.17.tgz
     version: 0.0.17
   - apiVersion: v1
     appVersion: 0.0.16
     created: "2020-09-14T15:34:53.711630013Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 81b906ba4fb22b31a511d9cfc5f42f8c7ad31d5d1fa1c339279456b39c5462c3
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.16/osiris-0.0.16.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.16/osiris-0.0.16.tgz
     version: 0.0.16
   - apiVersion: v1
     appVersion: 0.0.15
     created: "2020-09-14T13:04:23.52184859Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 5614fe197e36388696f2eea7dce8fc306f91e344e854751a359d005eeb7f2ddb
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.15/osiris-0.0.15.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.15/osiris-0.0.15.tgz
     version: 0.0.15
   - apiVersion: v1
     appVersion: 0.0.14
     created: "2020-09-14T09:33:10.955181948Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: b997b4e77216284679e9e0c83b155288025e6d77a6cc5bb63d4440f063b325df
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.14/osiris-0.0.14.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.14/osiris-0.0.14.tgz
     version: 0.0.14
   - apiVersion: v1
     appVersion: 0.0.13
     created: "2020-09-14T09:19:43.990707279Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 84af9bf3cde368ec584c1e9cc6251df3ce412420b3482035103f2ce9cf41674b
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.13/osiris-0.0.13.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.13/osiris-0.0.13.tgz
     version: 0.0.13
   - apiVersion: v1
     appVersion: 0.0.12
     created: "2020-09-14T09:13:41.468478652Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: bb82659dad98666aa55b589ee44e6f43890a1f53de49b6fb6316e572dcf2f512
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.12/osiris-0.0.12.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.12/osiris-0.0.12.tgz
     version: 0.0.12
   - apiVersion: v1
     appVersion: 0.0.11
     created: "2020-09-14T09:01:54.198452639Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 056c43fa621e6084dff2be6add619c3c9796414514af00cad4380828c751a7ee
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.11/osiris-0.0.11.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.11/osiris-0.0.11.tgz
     version: 0.0.11
   - apiVersion: v1
     appVersion: 0.0.10
     created: "2020-09-14T08:50:34.712252916Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 7d2f93e5665f0271cea5e626a6635c7fd5c3227b1816105253ad708d1addbd30
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.10/osiris-0.0.10.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.10/osiris-0.0.10.tgz
     version: 0.0.10
   - apiVersion: v1
     appVersion: 0.0.9
     created: "2020-09-14T08:38:21.945144469Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 7e534119ba29e0a51358dcab70f8c49f4d20f9b1628ca223929b053a3e062f82
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.9/osiris-0.0.9.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.9/osiris-0.0.9.tgz
     version: 0.0.9
   - apiVersion: v1
     appVersion: 0.0.8
     created: "2020-09-14T08:25:31.184278249Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: f758ed74e96e5dd30eb5857ccb142053f5fbef471c3dfedbc08d2054cc7eeb3b
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.8/osiris-0.0.8.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.8/osiris-0.0.8.tgz
     version: 0.0.8
   - apiVersion: v1
     appVersion: 0.0.7
     created: "2020-09-14T08:18:27.728260909Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: a38b89022b59f9222b3adb76988b98b6342b2dd0bbfc1f572ea06ff19a4b5551
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.7/osiris-0.0.7.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.7/osiris-0.0.7.tgz
     version: 0.0.7
   - apiVersion: v1
     appVersion: 0.0.6
     created: "2020-09-14T08:05:14.483244135Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: dbe24c996b1ee3dc30a452334e1d672b6e93e73191584dc287a29cef2ebfc03c
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.6/osiris-0.0.6.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.6/osiris-0.0.6.tgz
     version: 0.0.6
   - apiVersion: v1
     appVersion: 0.0.5
     created: "2020-09-11T14:25:07.31886709Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 3bcf08348e5e15dd6ace125462107976a2654dccb859c272e17af9fb41a0cc30
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.5/osiris-0.0.5.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.5/osiris-0.0.5.tgz
     version: 0.0.5
   - apiVersion: v1
     appVersion: 0.0.4
     created: "2020-09-11T08:52:43.365681757Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 5cf43c4158b604bf31cc030b3cc4d1a1de8ea9bc52f9d9d5092bf6be823e8d35
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.4/osiris-0.0.4.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.4/osiris-0.0.4.tgz
     version: 0.0.4
   - apiVersion: v1
     appVersion: 0.0.3
     created: "2020-09-11T08:47:33.162910017Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 07e93b25da03b717ee7ce614fed843a5e60e05709754350549cdce3deeab0fec
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.3/osiris-0.0.3.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.3/osiris-0.0.3.tgz
     version: 0.0.3
   - apiVersion: v1
     appVersion: 0.0.2
     created: "2020-09-11T08:32:15.328977069Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 0052f8ccfaad448e7ae76b1696d5379a0bb8fc80a19bae3a507e5fe274304085
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.2/osiris-0.0.2.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.2/osiris-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v1
     appVersion: 0.0.1
     created: "2020-09-11T08:08:59.755003079Z"
     description: A general purpose, scale-to-zero component for Kubernetes
     digest: 0f5c99eff4ec5799d95bc09dc6672973a69e3f2293efb20db425353cf040da3e
-    home: https://github.com/dailymotion/osiris
+    home: https://github.com/dailymotion-oss/osiris
     name: osiris
     sources:
-    - https://github.com/dailymotion/osiris
+    - https://github.com/dailymotion-oss/osiris
     urls:
-    - https://github.com/dailymotion/osiris/releases/download/osiris-0.0.1/osiris-0.0.1.tgz
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.1/osiris-0.0.1.tgz
     version: 0.0.1
 generated: "2020-09-11T08:08:59.695414527Z"
