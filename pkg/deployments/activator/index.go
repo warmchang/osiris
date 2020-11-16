@@ -82,9 +82,10 @@ func (a *activator) updateIndex() {
 			depNamespace := elems[0]
 			depName := elems[1]
 			dependencies = append(dependencies, &app{
-				namespace: depNamespace,
-				name:      depName,
-				kind:      depAppKind,
+				namespace:   depNamespace,
+				name:        depName,
+				kind:        depAppKind,
+				serviceName: depName,
 			})
 		}
 
