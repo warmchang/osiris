@@ -63,6 +63,9 @@ func (a *activator) updateIndex() {
 		// Retrieve the manually-declared dependencies (non-HTTP services)
 		dependencies := []*app{}
 		for _, dependency := range strings.Split(dependenciesAnnotationValue, ",") {
+			if len(dependency) == 0 {
+				continue
+			}
 			elems := strings.SplitN(dependency, ":", 2)
 			depKind := elems[0]
 			var depAppKind appKind
@@ -72,7 +75,7 @@ func (a *activator) updateIndex() {
 			case "statefulset":
 				depAppKind = appKindStatefulSet
 			default:
-				glog.Errorf("Error parsing dependencies URL for service %s in namespace %s: invalid appKind %s for dependency %s", svc.Name, svc.Namespace, depKind, dependency)
+				glog.Errorf("Error parsing dependencies annotations for service %s in namespace %s: invalid appKind %s for dependency %s", svc.Name, svc.Namespace, depKind, dependency)
 				continue
 			}
 			elems = strings.SplitN(elems[1], "/", 2)

@@ -166,8 +166,8 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 
 	// and then the dependencies - if any
 	var dependenciesAnnotationValue string
-	switch m.config.appKind {
-	case "Deployment":
+	switch strings.ToLower(m.config.appKind) {
+	case "deployment":
 		deployment, err := m.kubeClient.AppsV1().Deployments(m.config.appNamespace).Get(ctx, m.config.appName, metav1.GetOptions{})
 		if err != nil {
 			glog.Errorf("Error retrieving deployment %s in namespace %s: %s", m.config.appName, m.config.appNamespace, err)
@@ -176,7 +176,7 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 		if deployment.Annotations != nil {
 			dependenciesAnnotationValue = cleanAnnotationValue(deployment.Annotations["osiris.dm.gg/dependencies"])
 		}
-	case "StatefulSet":
+	case "statefulset":
 		statefulset, err := m.kubeClient.AppsV1().StatefulSets(m.config.appNamespace).Get(ctx, m.config.appName, metav1.GetOptions{})
 		if err != nil {
 			glog.Errorf("Error retrieving statefulset %s in namespace %s: %s", m.config.appName, m.config.appNamespace, err)
@@ -188,6 +188,9 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 	}
 
 	for _, dependency := range strings.Split(dependenciesAnnotationValue, ",") {
+		if len(dependency) == 0 {
+			continue
+		}
 		elems := strings.SplitN(dependency, ":", 2)
 		depKind := elems[0]
 		elems = strings.SplitN(elems[1], "/", 2)
@@ -207,8 +210,8 @@ func scaleToZero(ctx context.Context, kubeClient kubernetes.Interface, kind, nam
 	}}
 	patchesBytes, _ := json.Marshal(patches)
 	var err error
-	switch kind {
-	case "Deployment":
+	switch strings.ToLower(kind) {
+	case "deployment":
 		_, err = kubeClient.AppsV1().Deployments(namespace).Patch(
 			ctx,
 			name,
@@ -216,7 +219,7 @@ func scaleToZero(ctx context.Context, kubeClient kubernetes.Interface, kind, nam
 			patchesBytes,
 			metav1.PatchOptions{},
 		)
-	case "StatefulSet":
+	case "statefulset":
 		_, err = kubeClient.AppsV1().StatefulSets(namespace).Patch(
 			ctx,
 			name,
