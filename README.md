@@ -185,6 +185,7 @@ The following table lists the supported annotations for Kubernetes `Deployments`
 | `osiris.dm.gg/minReplicas` | The minimum number of replicas to set on the deployment/statefulSet when Osiris will scale up. If you set `2`, Osiris will scale the deployment/statefulSet from `0` to `2` replicas directly. Osiris won't collect metrics from deployments/statefulSets which have more than `minReplicas` replicas - to avoid useless collections of metrics. | `1` |
 | `osiris.dm.gg/metricsCheckInterval` | The interval in which Osiris would repeatedly track the pod http request metrics. The value is the number of seconds of the interval. Note that this value override the global value defined by the `zeroscaler.metricsCheckInterval` Helm value. | _value of the `zeroscaler.metricsCheckInterval` Helm value_ |
 | `osiris.dm.gg/metricsCollector` | Configure the collection of metrics for a pod. The value is a JSON object with at least a `type` string, and an optional `implementation` object. See the *Metrics Scraping* section for more. | `{ "type": "osiris" }` |
+| `osiris.dm.gg/dependencies` | A list of (comma-separated) dependent deployments/statefulsets to scale down/up with this one. Format: `kind:namespace/name`. Example: `deployment:my-ns/my-deployment,statefulset:my-ns/my-statefulset`. | _no value_ |
 
 #### Pod Annotations
 

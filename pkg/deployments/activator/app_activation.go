@@ -21,6 +21,7 @@ type appActivation struct {
 	lock           sync.Mutex
 	successCh      chan struct{}
 	timeoutCh      chan struct{}
+	dependencies   []*appActivation
 }
 
 func (a *appActivation) watchForCompletion(

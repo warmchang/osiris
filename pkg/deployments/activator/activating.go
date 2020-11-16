@@ -3,14 +3,56 @@ package activator
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/golang/glog"
+	"github.com/hashicorp/go-multierror"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	k8s_types "k8s.io/apimachinery/pkg/types"
 
 	"github.com/dailymotion-oss/osiris/pkg/kubernetes"
 )
+
+func (a *activator) activate(
+	ctx context.Context,
+	app *app,
+) (*appActivation, error) {
+	// activate all dependencies first
+	var (
+		dependenciesActivations []*appActivation
+		errs                    error
+	)
+	for _, dep := range app.dependencies {
+		activation, err := a.activate(ctx, dep)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+		} else {
+			dependenciesActivations = append(dependenciesActivations, activation)
+		}
+	}
+
+	var (
+		appActivation *appActivation
+		err           error
+	)
+	switch app.kind {
+	case appKindDeployment:
+		appActivation, err = a.activateDeployment(ctx, app)
+	case appKindStatefulSet:
+		appActivation, err = a.activateStatefulSet(ctx, app)
+	default:
+		return nil, fmt.Errorf("invalid app kind %s", app.kind)
+	}
+	if err != nil {
+		errs = multierror.Append(errs, err)
+	}
+	if errs != nil {
+		return nil, errs
+	}
+	appActivation.dependencies = dependenciesActivations
+	return appActivation, nil
+}
 
 func (a *activator) activateDeployment(
 	ctx context.Context,

@@ -1,6 +1,7 @@
 package activator
 
 import (
+	"context"
 	"fmt"
 	"net/http/httputil"
 	"net/url"
@@ -8,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // nolint: lll
@@ -21,23 +23,66 @@ var (
 // or statefulSet to activate and where to relay requests to after successful
 // activation. The new index replaces any old/existing index.
 func (a *activator) updateIndex() {
+	ctx := context.Background()
 	appsByHost := map[string]*app{}
 	for _, svc := range a.services {
 		var (
-			name string
-			kind appKind
+			name                        string
+			kind                        appKind
+			dependenciesAnnotationValue string
 		)
 		if deploymentName, ok :=
 			svc.Annotations["osiris.dm.gg/deployment"]; ok {
 			name = cleanAnnotationValue(deploymentName)
 			kind = appKindDeployment
+			deployment, err := a.kubeClient.AppsV1().Deployments(svc.Namespace).Get(ctx, name, metav1.GetOptions{})
+			if err != nil {
+				glog.Errorf("Error retrieving deployment %s in namespace %s: %s", name, svc.Namespace, err)
+				continue
+			}
+			if deployment.Annotations != nil {
+				dependenciesAnnotationValue = cleanAnnotationValue(deployment.Annotations["osiris.dm.gg/dependencies"])
+			}
 		} else if statefulSetName, ok :=
 			svc.Annotations["osiris.dm.gg/statefulset"]; ok {
 			name = cleanAnnotationValue(statefulSetName)
 			kind = appKindStatefulSet
+			statefulset, err := a.kubeClient.AppsV1().StatefulSets(svc.Namespace).Get(ctx, name, metav1.GetOptions{})
+			if err != nil {
+				glog.Errorf("Error retrieving statefulset %s in namespace %s: %s", name, svc.Namespace, err)
+				continue
+			}
+			if statefulset.Annotations != nil {
+				dependenciesAnnotationValue = cleanAnnotationValue(statefulset.Annotations["osiris.dm.gg/dependencies"])
+			}
 		}
 		if len(name) == 0 {
 			continue
+		}
+
+		// Retrieve the manually-declared dependencies (non-HTTP services)
+		dependencies := []*app{}
+		for _, dependency := range strings.Split(dependenciesAnnotationValue, ",") {
+			elems := strings.SplitN(dependency, ":", 2)
+			depKind := elems[0]
+			var depAppKind appKind
+			switch strings.ToLower(depKind) {
+			case "deployment":
+				depAppKind = appKindDeployment
+			case "statefulset":
+				depAppKind = appKindStatefulSet
+			default:
+				glog.Errorf("Error parsing dependencies URL for service %s in namespace %s: invalid appKind %s for dependency %s", svc.Name, svc.Namespace, depKind, dependency)
+				continue
+			}
+			elems = strings.SplitN(elems[1], "/", 2)
+			depNamespace := elems[0]
+			depName := elems[1]
+			dependencies = append(dependencies, &app{
+				namespace: depNamespace,
+				name:      depName,
+				kind:      depAppKind,
+			})
 		}
 
 		svcDNSNames := []string{
@@ -101,6 +146,7 @@ func (a *activator) updateIndex() {
 				kind:                kind,
 				targetURL:           targetURL,
 				proxyRequestHandler: httputil.NewSingleHostReverseProxy(targetURL),
+				dependencies:        dependencies,
 			}
 			// If the port is 80, also index by hostname/IP sans port number...
 			if port.Port == 80 {
