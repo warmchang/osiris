@@ -70,15 +70,7 @@ func (a *activator) handleRequest(
 			)
 			// Initiate activation (or discover that it may already have been started
 			// by another activator process)
-			switch app.kind {
-			case appKindDeployment:
-				appActivation, err = a.activateDeployment(r.Context(), app)
-			case appKindStatefulSet:
-				appActivation, err = a.activateStatefulSet(r.Context(), app)
-			default:
-				glog.Errorf("unvalid app kind %s", app.kind)
-				return
-			}
+			appActivation, err = a.activate(r.Context(), app)
 			if err != nil {
 				glog.Errorf(
 					"%s activation for %s in namespace %s failed: %s",

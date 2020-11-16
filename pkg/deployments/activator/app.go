@@ -19,4 +19,5 @@ type app struct {
 	kind                appKind
 	targetURL           *url.URL
 	proxyRequestHandler *httputil.ReverseProxy
+	dependencies        []*app
 }

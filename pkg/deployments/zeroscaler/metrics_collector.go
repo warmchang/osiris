@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -160,12 +161,44 @@ func (m *metricsCollector) collectMetrics(ctx context.Context) {
 }
 
 func (m *metricsCollector) scaleToZero(ctx context.Context) {
-	glog.Infof(
-		"Scale to zero starting for %s %s in namespace %s",
-		m.config.appKind,
-		m.config.appName,
-		m.config.appNamespace,
-	)
+	// scale the main app to zero first
+	scaleToZero(ctx, m.kubeClient, m.config.appKind, m.config.appNamespace, m.config.appName)
+
+	// and then the dependencies - if any
+	var dependenciesAnnotationValue string
+	switch m.config.appKind {
+	case "Deployment":
+		deployment, err := m.kubeClient.AppsV1().Deployments(m.config.appNamespace).Get(ctx, m.config.appName, metav1.GetOptions{})
+		if err != nil {
+			glog.Errorf("Error retrieving deployment %s in namespace %s: %s", m.config.appName, m.config.appNamespace, err)
+			return
+		}
+		if deployment.Annotations != nil {
+			dependenciesAnnotationValue = cleanAnnotationValue(deployment.Annotations["osiris.dm.gg/dependencies"])
+		}
+	case "StatefulSet":
+		statefulset, err := m.kubeClient.AppsV1().StatefulSets(m.config.appNamespace).Get(ctx, m.config.appName, metav1.GetOptions{})
+		if err != nil {
+			glog.Errorf("Error retrieving statefulset %s in namespace %s: %s", m.config.appName, m.config.appNamespace, err)
+			return
+		}
+		if statefulset.Annotations != nil {
+			dependenciesAnnotationValue = cleanAnnotationValue(statefulset.Annotations["osiris.dm.gg/dependencies"])
+		}
+	}
+
+	for _, dependency := range strings.Split(dependenciesAnnotationValue, ",") {
+		elems := strings.SplitN(dependency, ":", 2)
+		depKind := elems[0]
+		elems = strings.SplitN(elems[1], "/", 2)
+		depNamespace := elems[0]
+		depName := elems[1]
+		scaleToZero(ctx, m.kubeClient, depKind, depNamespace, depName)
+	}
+}
+
+func scaleToZero(ctx context.Context, kubeClient kubernetes.Interface, kind, namespace, name string) {
+	glog.Infof("Scale to zero starting for %s %s in namespace %s", kind, name, namespace)
 
 	patches := []k8s.PatchOperation{{
 		Op:    "replace",
@@ -174,41 +207,37 @@ func (m *metricsCollector) scaleToZero(ctx context.Context) {
 	}}
 	patchesBytes, _ := json.Marshal(patches)
 	var err error
-	switch m.config.appKind {
+	switch kind {
 	case "Deployment":
-		_, err = m.kubeClient.AppsV1().Deployments(m.config.appNamespace).Patch(
+		_, err = kubeClient.AppsV1().Deployments(namespace).Patch(
 			ctx,
-			m.config.appName,
+			name,
 			k8s_types.JSONPatchType,
 			patchesBytes,
 			metav1.PatchOptions{},
 		)
 	case "StatefulSet":
-		_, err = m.kubeClient.AppsV1().StatefulSets(m.config.appNamespace).Patch(
+		_, err = kubeClient.AppsV1().StatefulSets(namespace).Patch(
 			ctx,
-			m.config.appName,
+			name,
 			k8s_types.JSONPatchType,
 			patchesBytes,
 			metav1.PatchOptions{},
 		)
 	default:
-		err = fmt.Errorf("unknown kind '%s'", m.config.appKind)
+		err = fmt.Errorf("unknown kind '%s'", kind)
 	}
 	if err != nil {
-		glog.Errorf(
-			"Error scaling %s %s in namespace %s to zero: %s",
-			m.config.appKind,
-			m.config.appName,
-			m.config.appNamespace,
-			err,
-		)
+		glog.Errorf("Error scaling %s %s in namespace %s to zero: %s", kind, name, namespace, err)
 		return
 	}
 
-	glog.Infof(
-		"Scaled %s %s in namespace %s to zero",
-		m.config.appKind,
-		m.config.appName,
-		m.config.appNamespace,
-	)
+	glog.Infof("Scaled %s %s in namespace %s to zero", kind, name, namespace)
+}
+
+func cleanAnnotationValue(rawValue string) string {
+	value := strings.TrimSpace(rawValue)
+	value = strings.TrimLeft(value, "'")
+	value = strings.TrimRight(value, "'")
+	return value
 }
