@@ -2,6 +2,18 @@ apiVersion: v1
 entries:
   osiris:
   - apiVersion: v1
+    appVersion: 0.0.38
+    created: "2020-11-16T13:06:26.640390681Z"
+    description: A general purpose, scale-to-zero component for Kubernetes
+    digest: 90104cea44dad92e49094f61a6b7a88d112095563b87693f7103627f06e3ee7f
+    home: https://github.com/dailymotion-oss/osiris
+    name: osiris
+    sources:
+    - https://github.com/dailymotion-oss/osiris
+    urls:
+    - https://github.com/dailymotion-oss/osiris/releases/download/osiris-0.0.38/osiris-0.0.38.tgz
+    version: 0.0.38
+  - apiVersion: v1
     appVersion: 0.0.37
     created: "2020-11-16T09:55:09.200436986Z"
     description: A general purpose, scale-to-zero component for Kubernetes
