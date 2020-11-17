@@ -47,7 +47,7 @@ spec:
         {{- end }}
         {{- with .Values.proxyInjector.proxyLogLevel }}
         - name: PROXY_LOG_LEVEL
-          value: {{ . }}
+          value: {{ . | quote }}
         {{- end }}
         ports:
         - name: https
