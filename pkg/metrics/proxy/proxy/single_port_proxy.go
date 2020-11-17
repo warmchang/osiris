@@ -91,8 +91,19 @@ func (s *singlePortProxy) handleRequest(
 ) {
 	defer r.Body.Close()
 
-	if !s.isIgnoredRequest(r) {
-		atomic.AddUint64(s.requestCount, 1)
+	if glog.V(1) {
+		glog.Infof("Got new request on %s for %d: %v from %s", s.srv.Addr, s.appPort, r.RequestURI, r.Header.Get("User-Agent"))
+	}
+
+	if s.isIgnoredRequest(r) {
+		if glog.V(2) {
+			glog.Infof("Not counting request on %s for %d: %v from %s. Ignored paths are: %v", s.srv.Addr, s.appPort, r.RequestURI, r.Header.Get("User-Agent"), s.ignoredPaths)
+		}
+	} else {
+		requestCount := atomic.AddUint64(s.requestCount, 1)
+		if glog.V(2) {
+			glog.Infof("Counting request on %s for %d: %v from %s. Current request count is: %v", s.srv.Addr, s.appPort, r.RequestURI, r.Header.Get("User-Agent"), requestCount)
+		}
 	}
 
 	s.proxyRequestHandler.ServeHTTP(w, r)

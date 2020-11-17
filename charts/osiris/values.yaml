@@ -61,6 +61,10 @@ proxyInjector:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  # The glog level for the proxy:
+  # - 1: log incoming requests
+  # - 2: log information about requests count (and "ignored" requests)
+  proxyLogLevel:
 
 endpointsController:
   resources: {}

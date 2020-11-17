@@ -162,6 +162,10 @@ func (i *injector) getPodPatchOperations(
 			},
 		}
 
+		if len(i.config.ProxyLogLevel) > 0 {
+			proxyContainer.Args = append([]string{"-v", i.config.ProxyLogLevel}, proxyContainer.Args...)
+		}
+
 		var path string
 		var value interface{}
 		if len(pod.Spec.Containers) == 0 {
