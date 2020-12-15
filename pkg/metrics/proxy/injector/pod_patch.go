@@ -65,6 +65,11 @@ func (i *injector) getPodPatchOperations(
 
 	if !podContainsProxyInitContainer(&pod) {
 
+		var (
+			rootUID = int64(0)
+			rootGID = int64(0)
+		)
+
 		proxyInitContainer := corev1.Container{
 			Name:            proxyInitContainerName,
 			Image:           i.config.ProxyImage,
@@ -73,6 +78,8 @@ func (i *injector) getPodPatchOperations(
 				Capabilities: &corev1.Capabilities{
 					Add: []corev1.Capability{"NET_ADMIN"},
 				},
+				RunAsUser:  &rootUID,
+				RunAsGroup: &rootGID,
 			},
 			Command: []string{"/osiris/bin/osiris-proxy-iptables.sh"},
 			Env: []corev1.EnvVar{
@@ -110,12 +117,18 @@ func (i *injector) getPodPatchOperations(
 		// health checks
 		metricsAndHealthPort := getNextAvailablePort(usedPorts)
 
+		var (
+			osirisUID = int64(1000)
+			osirisGID = int64(1000)
+		)
+
 		proxyContainer := corev1.Container{
 			Name:            proxyContainerName,
 			Image:           i.config.ProxyImage,
 			ImagePullPolicy: corev1.PullPolicy(i.config.ProxyImagePullPolicy),
 			SecurityContext: &corev1.SecurityContext{
-				RunAsUser: func() *int64 { var ret int64 = 1000; return &ret }(),
+				RunAsUser:  &osirisUID,
+				RunAsGroup: &osirisGID,
 			},
 			Command: []string{"/osiris/bin/osiris"},
 			Args:    []string{"--logtostderr=true", "proxy"},
