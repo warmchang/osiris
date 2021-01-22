@@ -110,16 +110,21 @@ func (m *metricsCollector) syncDeletedAppPod(obj interface{}) {
 }
 
 func (m *metricsCollector) collectMetrics(ctx context.Context) {
-	requestCountsByProxy := map[string]uint64{}
-	var lastTotalRequestCount uint64
-	ticker := time.NewTicker(m.config.metricsCheckInterval)
+	var (
+		requestCountsByProxy     = map[string]uint64{}
+		requestCountsByProxyLock sync.Mutex
+		lastTotalRequestCount    uint64
+		ticker                   = time.NewTicker(m.config.metricsCheckInterval)
+	)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-ticker.C:
 			m.appPodsLock.Lock()
-			var mustNotDecide bool
-			var scrapeWG sync.WaitGroup
+			var (
+				mustNotDecide bool
+				scrapeWG      sync.WaitGroup
+			)
 			// An aggressively small timeout. We make the decision fast or not at
 			// all.
 			timer := time.NewTimer(3 * time.Second)
@@ -132,7 +137,9 @@ func (m *metricsCollector) collectMetrics(ctx context.Context) {
 					if prc == nil {
 						mustNotDecide = true
 					} else {
+						requestCountsByProxyLock.Lock()
 						requestCountsByProxy[prc.ProxyID] = prc.RequestCount
+						requestCountsByProxyLock.Unlock()
 					}
 				}(pod)
 			}
