@@ -1,6 +1,7 @@
 package activator
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/golang/glog"
@@ -70,7 +71,9 @@ func (a *activator) handleRequest(
 			)
 			// Initiate activation (or discover that it may already have been started
 			// by another activator process)
-			appActivation, err = a.activate(r.Context(), app)
+			ctx, cancelFunc := context.WithTimeout(context.Background(), a.appActivationTimeout)
+			defer cancelFunc()
+			appActivation, err = a.activate(ctx, app)
 			if err != nil {
 				glog.Errorf(
 					"%s activation for %s in namespace %s failed: %s",

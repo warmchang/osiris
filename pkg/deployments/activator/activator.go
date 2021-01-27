@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
@@ -21,16 +22,17 @@ type Activator interface {
 }
 
 type activator struct {
-	kubeClient         kubernetes.Interface
-	servicesInformer   cache.SharedIndexInformer
-	nodeInformer       cache.SharedIndexInformer
-	services           map[string]*corev1.Service
-	nodeAddresses      map[string]struct{}
-	appsByHost         map[string]*app
-	indicesLock        sync.RWMutex
-	appActivations     map[string]*appActivation
-	appActivationsLock sync.Mutex
-	srv                *http.Server
+	kubeClient           kubernetes.Interface
+	servicesInformer     cache.SharedIndexInformer
+	nodeInformer         cache.SharedIndexInformer
+	services             map[string]*corev1.Service
+	nodeAddresses        map[string]struct{}
+	appsByHost           map[string]*app
+	indicesLock          sync.RWMutex
+	appActivations       map[string]*appActivation
+	appActivationsLock   sync.Mutex
+	appActivationTimeout time.Duration
+	srv                  *http.Server
 }
 
 func NewActivator(kubeClient kubernetes.Interface) Activator {
@@ -56,8 +58,9 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 			Addr:    fmt.Sprintf(":%d", port),
 			Handler: mux,
 		},
-		appsByHost:     map[string]*app{},
-		appActivations: map[string]*appActivation{},
+		appsByHost:           map[string]*app{},
+		appActivations:       map[string]*appActivation{},
+		appActivationTimeout: 5 * time.Minute,
 	}
 	a.servicesInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: a.syncService,
