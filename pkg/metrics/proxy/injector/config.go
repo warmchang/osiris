@@ -7,11 +7,12 @@ const envconfigPrefix = "OSIRIS_PROXY_INJECTOR"
 // Config represents configuration options for the Osiris Proxy Injector
 // webhook server
 type Config struct {
-	TLSCertFile          string `envconfig:"TLS_CERT_FILE" required:"true"`
-	TLSKeyFile           string `envconfig:"TLS_KEY_FILE" required:"true"`
-	ProxyImage           string `envconfig:"PROXY_IMAGE" required:"true"`
-	ProxyImagePullPolicy string `envconfig:"PROXY_IMAGE_PULL_POLICY"`
-	ProxyLogLevel        string `envconfig:"PROXY_LOG_LEVEL"`
+	TLSCertFile           string `envconfig:"TLS_CERT_FILE" required:"true"`
+	TLSKeyFile            string `envconfig:"TLS_KEY_FILE" required:"true"`
+	ProxyImage            string `envconfig:"PROXY_IMAGE" required:"true"`
+	ProxyImagePullPolicy  string `envconfig:"PROXY_IMAGE_PULL_POLICY"`
+	ProxyLogLevel         string `envconfig:"PROXY_LOG_LEVEL"`
+	OpenTelemetryEndpoint string `envconfig:"OTLP_ENDPOINT"`
 }
 
 // NewConfigWithDefaults returns a Config object with default values already

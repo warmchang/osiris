@@ -19,14 +19,16 @@ type config struct {
 	PortMappings         string `envconfig:"PORT_MAPPINGS" required:"true"`
 	MetricsAndHealthPort int    `envconfig:"METRICS_AND_HEALTH_PORT" required:"true"` // nolint: lll
 	// comma-separated list of URL paths that won't be counted
-	IgnoredPaths string `envconfig:"IGNORED_PATHS"`
+	IgnoredPaths          string `envconfig:"IGNORED_PATHS"`
+	OpenTelemetryEndpoint string `envconfig:"OTLP_ENDPOINT"`
 }
 
 // Config represents configuration options for the Osiris Proxy
 type Config struct {
-	PortMappings         map[int]int
-	MetricsAndHealthPort int
-	IgnoredPaths         map[string]struct{}
+	PortMappings          map[int]int
+	MetricsAndHealthPort  int
+	IgnoredPaths          map[string]struct{}
+	OpenTelemetryEndpoint string
 }
 
 // NewConfigWithDefaults returns a Config object with default values already
@@ -69,6 +71,8 @@ func GetConfigFromEnvironment() (Config, error) {
 			c.IgnoredPaths[ignoredPath] = struct{}{}
 		}
 	}
+
+	c.OpenTelemetryEndpoint = internalC.OpenTelemetryEndpoint
 
 	return c, nil
 }

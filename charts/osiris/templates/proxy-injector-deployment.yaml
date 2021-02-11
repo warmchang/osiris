@@ -49,6 +49,10 @@ spec:
         - name: PROXY_LOG_LEVEL
           value: {{ . | quote }}
         {{- end }}
+        {{- with .Values.proxyInjector.openTelemetryEndpoint }}
+        - name: OTLP_ENDPOINT
+          value: {{ . | quote }}
+        {{- end }}
         ports:
         - name: https
           containerPort: 5000
