@@ -145,6 +145,10 @@ func (i *injector) getPodPatchOperations(
 					Name:  "IGNORED_PATHS",
 					Value: pod.Annotations[kubernetes.IgnoredPathsAnnotationName],
 				},
+				{
+					Name:  "OTLP_ENDPOINT",
+					Value: i.config.OpenTelemetryEndpoint,
+				},
 			},
 			Ports: []corev1.ContainerPort{
 				{

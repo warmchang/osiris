@@ -65,6 +65,9 @@ proxyInjector:
   # - 1: log incoming requests
   # - 2: log information about requests count (and "ignored" requests)
   proxyLogLevel:
+  # Optional endpoint of an opentelemetry collector (insecure GRPC endpoint)
+  # host:port format (port 55680 for grafana-tempo)
+  openTelemetryEndpoint:
 
 endpointsController:
   resources: {}

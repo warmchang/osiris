@@ -5,14 +5,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"sync/atomic"
 	"time"
 
 	"github.com/golang/glog"
 	uuid "github.com/satori/go.uuid"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpgrpc"
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/propagation"
+	sdkresource "go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/semconv"
 
 	"github.com/dailymotion-oss/osiris/pkg/healthz"
 	"github.com/dailymotion-oss/osiris/pkg/metrics"
+	"github.com/dailymotion-oss/osiris/pkg/version"
 )
 
 type Proxy interface {
@@ -20,11 +31,12 @@ type Proxy interface {
 }
 
 type proxy struct {
-	proxyID              string
-	requestCount         *uint64
-	singlePortProxies    []*singlePortProxy
-	healthzAndMetricsSvr *http.Server
-	ignoredPaths         map[string]struct{}
+	proxyID               string
+	requestCount          *uint64
+	singlePortProxies     []*singlePortProxy
+	healthzAndMetricsSvr  *http.Server
+	ignoredPaths          map[string]struct{}
+	openTelemetryExporter *otlp.Exporter
 }
 
 func NewProxy(cfg Config) (Proxy, error) {
@@ -40,6 +52,7 @@ func NewProxy(cfg Config) (Proxy, error) {
 		},
 		ignoredPaths: cfg.IgnoredPaths,
 	}
+	p.initOpenTelemetry(cfg.OpenTelemetryEndpoint)
 	for proxyPort, appPort := range cfg.PortMappings {
 		singlePortProxy, err :=
 			newSinglePortProxy(proxyPort, appPort, p.requestCount, p.ignoredPaths)
@@ -57,6 +70,15 @@ func NewProxy(cfg Config) (Proxy, error) {
 }
 
 func (p *proxy) Run(ctx context.Context) {
+	if p.openTelemetryExporter != nil {
+		defer func() {
+			err := p.openTelemetryExporter.Shutdown(ctx)
+			if err != nil {
+				glog.Errorf("failed to stop open telemetry exporter: %s", err)
+			}
+		}()
+	}
+
 	ctx, cancel := context.WithCancel(ctx)
 
 	// Start proxies for each port
@@ -110,4 +132,42 @@ func (p *proxy) handleMetricsRequest(w http.ResponseWriter, _ *http.Request) {
 	if _, err := w.Write(prcBytes); err != nil {
 		glog.Errorf("Error writing metrics request response body: %s", err)
 	}
+}
+
+func (p *proxy) initOpenTelemetry(openTelemetryEndpoint string) {
+	if len(openTelemetryEndpoint) == 0 {
+		return
+	}
+
+	ctx := context.Background()
+	exporter, err := otlp.NewExporter(ctx, otlpgrpc.NewDriver(
+		otlpgrpc.WithEndpoint(openTelemetryEndpoint),
+		otlpgrpc.WithInsecure(),
+	))
+	if err != nil {
+		glog.Warningf("failed to create an opentelemetry exporter for GRPC insecure endpoint %s: %s", openTelemetryEndpoint, err)
+		return
+	}
+
+	p.openTelemetryExporter = exporter
+
+	resource, err := sdkresource.Detect(ctx, &gcp.GKE{})
+	if err != nil {
+		glog.Warningf("failed to detect telemetry resource: %s", err)
+	}
+	resource = sdkresource.Merge(resource, sdkresource.NewWithAttributes(
+		semconv.ServiceNameKey.String("osiris-proxy"),
+		semconv.ServiceVersionKey.String(version.Version()),
+		label.Key("pod").String(os.Getenv("HOSTNAME")),
+		label.Key("container").String("osiris-proxy"),
+	))
+	otel.SetTracerProvider(sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithConfig(sdktrace.Config{DefaultSampler: sdktrace.AlwaysSample()}),
+		sdktrace.WithResource(resource),
+	))
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.Baggage{},
+		propagation.TraceContext{},
+	))
 }

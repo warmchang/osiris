@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel/label"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type singlePortProxy struct {
@@ -42,7 +45,15 @@ func newSinglePortProxy(
 		proxyRequestHandler: httputil.NewSingleHostReverseProxy(targetURL),
 		ignoredPaths:        ignoredPaths,
 	}
-	mux.HandleFunc("/", s.handleRequest)
+	s.proxyRequestHandler.Transport = otelhttp.NewTransport(http.DefaultTransport)
+	mux.Handle("/", otelhttp.NewHandler(
+		http.HandlerFunc(s.handleRequest),
+		"http.request",
+		otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents),
+		otelhttp.WithFilter(func(r *http.Request) bool {
+			return !s.isIgnoredRequest(r)
+		}),
+	))
 	return s, nil
 }
 
@@ -91,8 +102,10 @@ func (s *singlePortProxy) handleRequest(
 ) {
 	defer r.Body.Close()
 
+	span := trace.SpanFromContext(r.Context())
+
 	if glog.V(1) {
-		glog.Infof("Got new request on %s for %d: %v from %s", s.srv.Addr, s.appPort, r.RequestURI, r.Header.Get("User-Agent"))
+		glog.Infof("Got new request on %s for %d: %v from %s. traceid=%s", s.srv.Addr, s.appPort, r.RequestURI, r.Header.Get("User-Agent"), span.SpanContext().TraceID.String())
 	}
 
 	if s.isIgnoredRequest(r) {
@@ -104,6 +117,7 @@ func (s *singlePortProxy) handleRequest(
 		if glog.V(2) {
 			glog.Infof("Counting request on %s for %d: %v from %s. Current request count is: %v", s.srv.Addr, s.appPort, r.RequestURI, r.Header.Get("User-Agent"), requestCount)
 		}
+		span.SetAttributes(label.Key("osiris.proxy.request.count").Uint64(requestCount))
 	}
 
 	s.proxyRequestHandler.ServeHTTP(w, r)
