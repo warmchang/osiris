@@ -1,16 +1,10 @@
 # Osiris - A general purpose, Scale to Zero component for Kubernetes
 
-**This is a fork of the original [deislabs' Osiris](https://github.com/deislabs/osiris)**.
+**This is a maintained fork of the original [deislabs' Osiris](https://github.com/deislabs/osiris) (which has been archived and is not maintained anymore)**.
 
-It was forked before the [HTTPS and HTTP/2 support PR](https://github.com/deislabs/osiris/pull/27),
+Note that it was forked before the [HTTPS and HTTP/2 support PR](https://github.com/deislabs/osiris/pull/27),
 because we observed [failed requests with the proxy](https://github.com/deislabs/osiris/issues/45)
 following this change.
-
-We also have [a set of new features](https://github.com/deislabs/osiris/pulls) we'd like to add,
-and we can iterate faster on our own fork.
-
-The long-term plan is NOT to maintain this fork, but to merge back into the original project - 
-depending on the original project maintainers.
 
 ## Introduction
 
