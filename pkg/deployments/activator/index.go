@@ -1,7 +1,6 @@
 package activator
 
 import (
-	"context"
 	"fmt"
 	"net/http/httputil"
 	"net/url"
@@ -9,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // nolint: lll
@@ -23,7 +21,6 @@ var (
 // or statefulSet to activate and where to relay requests to after successful
 // activation. The new index replaces any old/existing index.
 func (a *activator) updateIndex() {
-	ctx := context.Background()
 	appsByHost := map[string]*app{}
 	for _, svc := range a.services {
 		var (
@@ -35,24 +32,16 @@ func (a *activator) updateIndex() {
 			svc.Annotations["osiris.dm.gg/deployment"]; ok {
 			name = cleanAnnotationValue(deploymentName)
 			kind = appKindDeployment
-			deployment, err := a.kubeClient.AppsV1().Deployments(svc.Namespace).Get(ctx, name, metav1.GetOptions{})
-			if err != nil {
-				glog.Errorf("Error retrieving deployment %s in namespace %s: %s", name, svc.Namespace, err)
-				continue
-			}
-			if deployment.Annotations != nil {
+			deployment := a.deployments[getKey(svc.Namespace, kind, name)]
+			if deployment != nil && deployment.Annotations != nil {
 				dependenciesAnnotationValue = cleanAnnotationValue(deployment.Annotations["osiris.dm.gg/dependencies"])
 			}
 		} else if statefulSetName, ok :=
 			svc.Annotations["osiris.dm.gg/statefulset"]; ok {
 			name = cleanAnnotationValue(statefulSetName)
 			kind = appKindStatefulSet
-			statefulset, err := a.kubeClient.AppsV1().StatefulSets(svc.Namespace).Get(ctx, name, metav1.GetOptions{})
-			if err != nil {
-				glog.Errorf("Error retrieving statefulset %s in namespace %s: %s", name, svc.Namespace, err)
-				continue
-			}
-			if statefulset.Annotations != nil {
+			statefulset := a.statefulSets[getKey(svc.Namespace, kind, name)]
+			if statefulset != nil && statefulset.Annotations != nil {
 				dependenciesAnnotationValue = cleanAnnotationValue(statefulset.Annotations["osiris.dm.gg/dependencies"])
 			}
 		}
