@@ -129,6 +129,14 @@ func (a *activator) Run(ctx context.Context) {
 		cancel()
 	}()
 	go func() {
+		a.deploymentsInformer.Run(ctx.Done())
+		cancel()
+	}()
+	go func() {
+		a.statefulSetsInformer.Run(ctx.Done())
+		cancel()
+	}()
+	go func() {
 		if err := a.runServer(ctx); err != nil {
 			glog.Errorf("Server error: %s", err)
 			cancel()
