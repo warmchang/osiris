@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -25,7 +26,11 @@ type activator struct {
 	kubeClient           kubernetes.Interface
 	servicesInformer     cache.SharedIndexInformer
 	nodeInformer         cache.SharedIndexInformer
+	deploymentsInformer  cache.SharedIndexInformer
+	statefulSetsInformer cache.SharedIndexInformer
 	services             map[string]*corev1.Service
+	deployments          map[string]*appsv1.Deployment
+	statefulSets         map[string]*appsv1.StatefulSet
 	nodeAddresses        map[string]struct{}
 	appsByHost           map[string]*app
 	indicesLock          sync.RWMutex
@@ -52,7 +57,21 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 			nil,
 			nil,
 		),
+		deploymentsInformer: k8s.DeploymentsIndexInformer(
+			kubeClient,
+			metav1.NamespaceAll,
+			nil,
+			nil,
+		),
+		statefulSetsInformer: k8s.StatefulSetsIndexInformer(
+			kubeClient,
+			metav1.NamespaceAll,
+			nil,
+			nil,
+		),
 		services:      map[string]*corev1.Service{},
+		deployments:   map[string]*appsv1.Deployment{},
+		statefulSets:  map[string]*appsv1.StatefulSet{},
 		nodeAddresses: map[string]struct{}{},
 		srv: &http.Server{
 			Addr:    fmt.Sprintf(":%d", port),
@@ -75,6 +94,20 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 			a.syncNode(newObj)
 		},
 		DeleteFunc: a.syncDeletedNode,
+	})
+	a.deploymentsInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: a.syncDeployment,
+		UpdateFunc: func(_, newObj interface{}) {
+			a.syncDeployment(newObj)
+		},
+		DeleteFunc: a.syncDeletedDeployment,
+	})
+	a.statefulSetsInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: a.syncStatefulSet,
+		UpdateFunc: func(_, newObj interface{}) {
+			a.syncStatefulSet(newObj)
+		},
+		DeleteFunc: a.syncDeletedStatefulSet,
 	})
 	mux.HandleFunc("/", a.handleRequest)
 	return a
@@ -106,10 +139,13 @@ func (a *activator) Run(ctx context.Context) {
 }
 
 func (a *activator) syncService(obj interface{}) {
+	svc, ok := obj.(*corev1.Service)
+	if !ok {
+		return
+	}
+	svcKey := getKey(svc.Namespace, "Service", svc.Name)
 	a.indicesLock.Lock()
 	defer a.indicesLock.Unlock()
-	svc := obj.(*corev1.Service)
-	svcKey := getKey(svc.Namespace, "Service", svc.Name)
 	if k8s.ServiceIsEligibleForEndpointsManagement(svc.Annotations) {
 		a.services[svcKey] = svc
 	} else {
@@ -119,18 +155,24 @@ func (a *activator) syncService(obj interface{}) {
 }
 
 func (a *activator) syncDeletedService(obj interface{}) {
+	svc, ok := obj.(*corev1.Service)
+	if !ok {
+		return
+	}
+	svcKey := getKey(svc.Namespace, "Service", svc.Name)
 	a.indicesLock.Lock()
 	defer a.indicesLock.Unlock()
-	svc := obj.(*corev1.Service)
-	svcKey := getKey(svc.Namespace, "Service", svc.Name)
 	delete(a.services, svcKey)
 	a.updateIndex()
 }
 
 func (a *activator) syncNode(obj interface{}) {
+	node, ok := obj.(*corev1.Node)
+	if !ok {
+		return
+	}
 	a.indicesLock.Lock()
 	defer a.indicesLock.Unlock()
-	node := obj.(*corev1.Node)
 	for _, nodeAddress := range node.Status.Addresses {
 		a.nodeAddresses[nodeAddress.Address] = struct{}{}
 	}
@@ -138,11 +180,59 @@ func (a *activator) syncNode(obj interface{}) {
 }
 
 func (a *activator) syncDeletedNode(obj interface{}) {
+	node, ok := obj.(*corev1.Node)
+	if !ok {
+		return
+	}
 	a.indicesLock.Lock()
 	defer a.indicesLock.Unlock()
-	node := obj.(*corev1.Node)
 	for _, nodeAddress := range node.Status.Addresses {
 		delete(a.nodeAddresses, nodeAddress.Address)
 	}
+	a.updateIndex()
+}
+
+func (a *activator) syncDeployment(obj interface{}) {
+	deployment, ok := obj.(*appsv1.Deployment)
+	if !ok {
+		return
+	}
+	deploymentKey := getKey(deployment.Namespace, appKindDeployment, deployment.Name)
+	a.indicesLock.Lock()
+	defer a.indicesLock.Unlock()
+	a.deployments[deploymentKey] = deployment
+	a.updateIndex()
+}
+
+func (a *activator) syncDeletedDeployment(obj interface{}) {
+	a.indicesLock.Lock()
+	defer a.indicesLock.Unlock()
+	deployment := obj.(*appsv1.Deployment)
+	deploymentKey := getKey(deployment.Namespace, appKindDeployment, deployment.Name)
+	delete(a.deployments, deploymentKey)
+	a.updateIndex()
+}
+
+func (a *activator) syncStatefulSet(obj interface{}) {
+	statefulSet, ok := obj.(*appsv1.StatefulSet)
+	if !ok {
+		return
+	}
+	statefulSetKey := getKey(statefulSet.Namespace, appKindStatefulSet, statefulSet.Name)
+	a.indicesLock.Lock()
+	defer a.indicesLock.Unlock()
+	a.statefulSets[statefulSetKey] = statefulSet
+	a.updateIndex()
+}
+
+func (a *activator) syncDeletedStatefulSet(obj interface{}) {
+	statefulSet, ok := obj.(*appsv1.StatefulSet)
+	if !ok {
+		return
+	}
+	statefulSetKey := getKey(statefulSet.Namespace, appKindStatefulSet, statefulSet.Name)
+	a.indicesLock.Lock()
+	defer a.indicesLock.Unlock()
+	delete(a.statefulSets, statefulSetKey)
 	a.updateIndex()
 }
