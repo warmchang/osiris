@@ -34,9 +34,10 @@ func (a *appActivation) watchForCompletion(
 	// Watch the pods managed by this deployment/statefulSet
 	podsInformer := k8s.PodsIndexInformer(
 		kubeClient,
-		app.namespace,
+		app.Namespace,
 		nil,
 		appPodSelector,
+		0,
 	)
 	podsInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: a.syncPod,
@@ -48,12 +49,13 @@ func (a *appActivation) watchForCompletion(
 	// Watch the corresponding endpoints resource for this service
 	endpointsInformer := k8s.EndpointsIndexInformer(
 		kubeClient,
-		app.namespace,
+		app.Namespace,
 		fields.OneTermEqualSelector(
 			"metadata.name",
-			app.serviceName,
+			app.ServiceName,
 		),
 		nil,
+		0,
 	)
 	endpointsInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: a.syncEndpoints,
@@ -72,9 +74,9 @@ func (a *appActivation) watchForCompletion(
 		case <-timer.C:
 			glog.Errorf(
 				"Activation of %s %s in namespace %s timed out",
-				app.kind,
-				app.name,
-				app.namespace,
+				app.Kind,
+				app.Name,
+				app.Namespace,
 			)
 			close(a.timeoutCh)
 			return

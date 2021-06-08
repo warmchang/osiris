@@ -33,12 +33,18 @@ spec:
         args:
         - --logtostderr=true
         - activator
+        env:
+        - name: INFORMERS_RESYNC_INTERVAL
+          value: {{ .Values.activator.informers.resyncInterval | quote }}
         ports:
         - name: proxy
           containerPort: 5000
           protocol: TCP
         - name: healthz
           containerPort: 5001
+          protocol: TCP
+        - name: internal
+          containerPort: 5002
           protocol: TCP
         livenessProbe:
           httpGet:

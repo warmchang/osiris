@@ -40,6 +40,8 @@ spec:
           value: app.kubernetes.io/name
         - name: ACTIVATOR_POD_LABEL_SELECTOR_VALUE
           value: {{ include "osiris.name" . }}-activator
+        - name: INFORMERS_RESYNC_INTERVAL
+          value: {{ .Values.endpointsController.informers.resyncInterval | quote }}
         ports:
         - name: healthz
           containerPort: 5000

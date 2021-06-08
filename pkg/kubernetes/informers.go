@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -19,6 +20,7 @@ func DeploymentsIndexInformer(
 	namespace string,
 	fieldSelector fields.Selector,
 	labelSelector labels.Selector,
+	resyncPeriod time.Duration,
 ) cache.SharedIndexInformer {
 	deploymentsClient := client.AppsV1().Deployments(namespace)
 	return cache.NewSharedIndexInformer(
@@ -43,7 +45,7 @@ func DeploymentsIndexInformer(
 			},
 		},
 		&appsv1.Deployment{},
-		0,
+		resyncPeriod,
 		cache.Indexers{},
 	)
 }
@@ -53,6 +55,7 @@ func StatefulSetsIndexInformer(
 	namespace string,
 	fieldSelector fields.Selector,
 	labelSelector labels.Selector,
+	resyncPeriod time.Duration,
 ) cache.SharedIndexInformer {
 	statefulSetsClient := client.AppsV1().StatefulSets(namespace)
 	return cache.NewSharedIndexInformer(
@@ -77,7 +80,7 @@ func StatefulSetsIndexInformer(
 			},
 		},
 		&appsv1.StatefulSet{},
-		0,
+		resyncPeriod,
 		cache.Indexers{},
 	)
 }
@@ -87,6 +90,7 @@ func PodsIndexInformer(
 	namespace string,
 	fieldSelector fields.Selector,
 	labelSelector labels.Selector,
+	resyncPeriod time.Duration,
 ) cache.SharedIndexInformer {
 	podsClient := client.CoreV1().Pods(namespace)
 	return cache.NewSharedIndexInformer(
@@ -111,7 +115,7 @@ func PodsIndexInformer(
 			},
 		},
 		&corev1.Pod{},
-		0,
+		resyncPeriod,
 		cache.Indexers{},
 	)
 }
@@ -121,6 +125,7 @@ func ServicesIndexInformer(
 	namespace string,
 	fieldSelector fields.Selector,
 	labelSelector labels.Selector,
+	resyncPeriod time.Duration,
 ) cache.SharedIndexInformer {
 	servicesClient := client.CoreV1().Services(namespace)
 	return cache.NewSharedIndexInformer(
@@ -145,7 +150,7 @@ func ServicesIndexInformer(
 			},
 		},
 		&corev1.Service{},
-		0,
+		resyncPeriod,
 		cache.Indexers{},
 	)
 }
@@ -155,6 +160,7 @@ func EndpointsIndexInformer(
 	namespace string,
 	fieldSelector fields.Selector,
 	labelSelector labels.Selector,
+	resyncPeriod time.Duration,
 ) cache.SharedIndexInformer {
 	endpointsClient := client.CoreV1().Endpoints(namespace)
 	return cache.NewSharedIndexInformer(
@@ -179,7 +185,7 @@ func EndpointsIndexInformer(
 			},
 		},
 		&corev1.Endpoints{},
-		0,
+		resyncPeriod,
 		cache.Indexers{},
 	)
 }
@@ -189,6 +195,7 @@ func NodesIndexInformer(
 	namespace string,
 	fieldSelector fields.Selector,
 	labelSelector labels.Selector,
+	resyncPeriod time.Duration,
 ) cache.SharedIndexInformer {
 	nodesClient := client.CoreV1().Nodes()
 	return cache.NewSharedIndexInformer(
@@ -213,7 +220,7 @@ func NodesIndexInformer(
 			},
 		},
 		&corev1.Node{},
-		0,
+		resyncPeriod,
 		cache.Indexers{},
 	)
 }

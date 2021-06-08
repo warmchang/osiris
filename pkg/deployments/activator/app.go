@@ -13,11 +13,11 @@ const (
 )
 
 type app struct {
-	namespace           string
-	serviceName         string
-	name                string
-	kind                appKind
-	targetURL           *url.URL
+	Namespace           string
+	ServiceName         string
+	Name                string
+	Kind                appKind
+	Dependencies        []*app
+	TargetURL           *url.URL
 	proxyRequestHandler *httputil.ReverseProxy
-	dependencies        []*app
 }

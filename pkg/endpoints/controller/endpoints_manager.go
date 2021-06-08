@@ -70,6 +70,7 @@ func newEndpointsManager(
 			svc.Namespace,
 			nil,
 			labels.SelectorFromSet(selectorMap),
+			c.config.ResyncInterval,
 		),
 		controller:   c,
 		readyAppPods: map[string]corev1.Pod{},

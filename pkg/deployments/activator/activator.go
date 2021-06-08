@@ -38,11 +38,18 @@ type activator struct {
 	appActivationsLock   sync.Mutex
 	appActivationTimeout time.Duration
 	srv                  *http.Server
+	internalSrv          *http.Server
 }
 
-func NewActivator(kubeClient kubernetes.Interface) Activator {
-	const port = 5000
-	mux := http.NewServeMux()
+func NewActivator(cfg Config, kubeClient kubernetes.Interface) Activator {
+	const (
+		port         = 5000
+		internalPort = 5002
+	)
+	var (
+		mux         = http.NewServeMux()
+		internalMux = http.NewServeMux()
+	)
 	a := &activator{
 		kubeClient: kubeClient,
 		servicesInformer: k8s.ServicesIndexInformer(
@@ -50,24 +57,28 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			cfg.ResyncInterval,
 		),
 		nodeInformer: k8s.NodesIndexInformer(
 			kubeClient,
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			cfg.ResyncInterval,
 		),
 		deploymentsInformer: k8s.DeploymentsIndexInformer(
 			kubeClient,
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			cfg.ResyncInterval,
 		),
 		statefulSetsInformer: k8s.StatefulSetsIndexInformer(
 			kubeClient,
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			cfg.ResyncInterval,
 		),
 		services:      map[string]*corev1.Service{},
 		deployments:   map[string]*appsv1.Deployment{},
@@ -76,6 +87,10 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 		srv: &http.Server{
 			Addr:    fmt.Sprintf(":%d", port),
 			Handler: mux,
+		},
+		internalSrv: &http.Server{
+			Addr:    fmt.Sprintf(":%d", internalPort),
+			Handler: internalMux,
 		},
 		appsByHost:           map[string]*app{},
 		appActivations:       map[string]*appActivation{},
@@ -110,6 +125,8 @@ func NewActivator(kubeClient kubernetes.Interface) Activator {
 		DeleteFunc: a.syncDeletedStatefulSet,
 	})
 	mux.HandleFunc("/", a.handleRequest)
+	internalMux.HandleFunc("/", a.printInternalIndicesState)
+	internalMux.HandleFunc("/services", a.printInternalServicesState)
 	return a
 }
 
@@ -137,7 +154,18 @@ func (a *activator) Run(ctx context.Context) {
 		cancel()
 	}()
 	go func() {
-		if err := a.runServer(ctx); err != nil {
+		glog.Infof(
+			"Activator server is listening on %s, proxying all deactivated, Osiris-enabled applications",
+			a.srv.Addr,
+		)
+		if err := a.runServer(ctx, a.srv); err != nil {
+			glog.Errorf("Server error: %s", err)
+			cancel()
+		}
+	}()
+	go func() {
+		glog.Infof("Activator internal server is listening on %s", a.internalSrv.Addr)
+		if err := a.runServer(ctx, a.internalSrv); err != nil {
 			glog.Errorf("Server error: %s", err)
 			cancel()
 		}
