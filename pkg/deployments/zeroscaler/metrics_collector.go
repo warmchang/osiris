@@ -20,12 +20,13 @@ import (
 )
 
 type metricsCollectorConfig struct {
-	appKind              string
-	appName              string
-	appNamespace         string
-	selector             labels.Selector
-	metricsCheckInterval time.Duration
-	scraperConfig        metricsScraperConfig
+	appKind                 string
+	appName                 string
+	appNamespace            string
+	selector                labels.Selector
+	metricsCheckInterval    time.Duration
+	scraperConfig           metricsScraperConfig
+	informerRefreshInterval time.Duration
 }
 
 type metricsCollector struct {
@@ -55,6 +56,7 @@ func newMetricsCollector(
 			config.appNamespace,
 			nil,
 			config.selector,
+			config.informerRefreshInterval,
 		),
 		appPods: map[string]*corev1.Pod{},
 	}

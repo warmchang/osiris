@@ -1,4 +1,4 @@
-package zeroscaler
+package activator
 
 import (
 	"time"
@@ -6,13 +6,12 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-const envconfigPrefix = "ZEROSCALER"
+const envconfigPrefix = "ACTIVATOR"
 
-// Config represents the configuration options for zeroscaler
+// Config represents the configuration options for activator
 // nolint: lll
 type Config struct {
-	MetricsCheckInterval int           `envconfig:"METRICS_CHECK_INTERVAL" required:"true"`
-	ResyncInterval       time.Duration `envconfig:"INFORMERS_RESYNC_INTERVAL" required:"true"`
+	ResyncInterval time.Duration `envconfig:"INFORMERS_RESYNC_INTERVAL" required:"true"`
 }
 
 // NewConfigWithDefaults returns a Config object with default values already

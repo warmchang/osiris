@@ -25,6 +25,10 @@ activator:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  informers:
+    # The interval at which the informers will re-list their resources from the Kubernetes API.
+    # The value is a golang duration.
+    resyncInterval: 10m
 
 zeroscaler:
   resources: {}
@@ -44,6 +48,10 @@ zeroscaler:
   # The interval in which the zeroScaler would repeatedly track the pod http request metrics.
   # The value is the number of seconds of the interval.
   metricsCheckInterval: 150
+  informers:
+    # The interval at which the informers will re-list their resources from the Kubernetes API.
+    # The value is a golang duration.
+    resyncInterval: 10m
 
 proxyInjector:
   replicaCount: 1
@@ -84,6 +92,10 @@ endpointsController:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  informers:
+    # The interval at which the informers will re-list their resources from the Kubernetes API.
+    # The value is a golang duration.
+    resyncInterval: 10m
 
 endpointsHijacker:
   replicaCount: 1

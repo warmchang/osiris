@@ -36,6 +36,8 @@ spec:
         env:
         - name: METRICS_CHECK_INTERVAL
           value: {{ .Values.zeroscaler.metricsCheckInterval | quote }}
+        - name: INFORMERS_RESYNC_INTERVAL
+          value: {{ .Values.zeroscaler.informers.resyncInterval | quote }}
         ports:
         - name: healthz
           containerPort: 5000

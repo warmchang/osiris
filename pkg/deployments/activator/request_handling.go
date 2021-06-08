@@ -2,9 +2,11 @@ package activator
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/golang/glog"
+	corev1 "k8s.io/api/core/v1"
 )
 
 func (a *activator) handleRequest(
@@ -30,21 +32,21 @@ func (a *activator) handleRequest(
 
 	glog.Infof(
 		"%s %s in namespace %s may require activation",
-		app.kind,
-		app.name,
-		app.namespace,
+		app.Kind,
+		app.Name,
+		app.Namespace,
 	)
 
 	// Are we already activating the deployment/statefulset in question?
 	var err error
-	appKey := getKey(app.namespace, app.kind, app.name)
+	appKey := getKey(app.Namespace, app.Kind, app.Name)
 	appActivation, ok := a.appActivations[appKey]
 	if ok {
 		glog.Infof(
 			"Found activation in-progress for %s %s in namespace %s",
-			app.kind,
-			app.name,
-			app.namespace,
+			app.Kind,
+			app.Name,
+			app.Namespace,
 		)
 	} else {
 		func() {
@@ -57,17 +59,17 @@ func (a *activator) handleRequest(
 			if ok {
 				glog.Infof(
 					"Found activation in-progress for %s %s in namespace %s",
-					app.kind,
-					app.name,
-					app.namespace,
+					app.Kind,
+					app.Name,
+					app.Namespace,
 				)
 				return
 			}
 			glog.Infof(
 				"Found NO activation in-progress for %s %s in namespace %s",
-				app.kind,
-				app.name,
-				app.namespace,
+				app.Kind,
+				app.Name,
+				app.Namespace,
 			)
 			// Initiate activation (or discover that it may already have been started
 			// by another activator process)
@@ -77,9 +79,9 @@ func (a *activator) handleRequest(
 			if err != nil {
 				glog.Errorf(
 					"%s activation for %s in namespace %s failed: %s",
-					app.kind,
-					app.name,
-					app.namespace,
+					app.Kind,
+					app.Name,
+					app.Namespace,
 					err,
 				)
 				return
@@ -104,9 +106,9 @@ func (a *activator) handleRequest(
 		if err != nil {
 			glog.Errorf(
 				"Error activating %s %s in namespace %s: %s",
-				app.kind,
-				app.name,
-				app.namespace,
+				app.Kind,
+				app.Name,
+				app.Namespace,
 				err,
 			)
 			a.returnError(w, http.StatusServiceUnavailable)
@@ -119,10 +121,48 @@ func (a *activator) handleRequest(
 	// or time out.
 	select {
 	case <-appActivation.successCh:
-		glog.Infof("Passing request on to: %s", app.targetURL)
+		glog.Infof("Passing request on to: %s", app.TargetURL)
 		app.proxyRequestHandler.ServeHTTP(w, r)
 	case <-appActivation.timeoutCh:
 		a.returnError(w, http.StatusServiceUnavailable)
+	}
+}
+
+func (a *activator) printInternalIndicesState(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	a.indicesLock.RLock()
+	appsByHost := make(map[string]*app, len(a.appsByHost))
+	for host, app := range a.appsByHost {
+		appsByHost[host] = app
+	}
+	a.indicesLock.RUnlock()
+
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	err := enc.Encode(appsByHost)
+	if err != nil {
+		glog.Errorf("Error encoding appsByHost in json: %s", err)
+	}
+}
+
+func (a *activator) printInternalServicesState(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	a.indicesLock.RLock()
+	services := make(map[string]*corev1.Service, len(a.services))
+	for name, svc := range a.services {
+		services[name] = svc
+	}
+	a.indicesLock.RUnlock()
+
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+	err := enc.Encode(services)
+	if err != nil {
+		glog.Errorf("Error encoding services in json: %s", err)
 	}
 }
 

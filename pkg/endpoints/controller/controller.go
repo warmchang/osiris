@@ -28,6 +28,7 @@ type Controller interface {
 // controller is a component that can take over management of endpoints
 // resources corresponding to selector-less, Osiris-enabled services
 type controller struct {
+	config                 Config
 	kubeClient             kubernetes.Interface
 	activatorPodsInformer  cache.SharedIndexInformer
 	readyActivatorPods     map[string]corev1.Pod
@@ -50,12 +51,14 @@ func NewController(
 		},
 	)
 	c := &controller{
+		config:     config,
 		kubeClient: kubeClient,
 		activatorPodsInformer: k8s.PodsIndexInformer(
 			kubeClient,
 			config.OsirisNamespace,
 			nil,
 			activatorPodsSelector,
+			config.ResyncInterval,
 		),
 		readyActivatorPods: map[string]corev1.Pod{},
 		servicesInformer: k8s.ServicesIndexInformer(
@@ -63,6 +66,7 @@ func NewController(
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			config.ResyncInterval,
 		),
 		managers: map[string]*endpointsManager{},
 	}

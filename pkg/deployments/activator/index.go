@@ -71,10 +71,10 @@ func (a *activator) updateIndex() {
 			depNamespace := elems[0]
 			depName := elems[1]
 			dependencies = append(dependencies, &app{
-				namespace:   depNamespace,
-				name:        depName,
-				kind:        depAppKind,
-				serviceName: depName,
+				Namespace:   depNamespace,
+				Name:        depName,
+				Kind:        depAppKind,
+				ServiceName: depName,
 			})
 		}
 
@@ -133,13 +133,13 @@ func (a *activator) updateIndex() {
 				continue
 			}
 			app := &app{
-				namespace:           svc.Namespace,
-				serviceName:         svc.Name,
-				name:                name,
-				kind:                kind,
-				targetURL:           targetURL,
+				Namespace:           svc.Namespace,
+				ServiceName:         svc.Name,
+				Name:                name,
+				Kind:                kind,
+				Dependencies:        dependencies,
+				TargetURL:           targetURL,
 				proxyRequestHandler: httputil.NewSingleHostReverseProxy(targetURL),
-				dependencies:        dependencies,
 			}
 			// If the port is 80, also index by hostname/IP sans port number...
 			if port.Port == 80 {

@@ -23,7 +23,7 @@ func (a *activator) activate(
 		dependenciesActivations []*appActivation
 		errs                    error
 	)
-	for _, dep := range app.dependencies {
+	for _, dep := range app.Dependencies {
 		activation, err := a.activate(ctx, dep)
 		if err != nil {
 			errs = multierror.Append(errs, err)
@@ -36,13 +36,13 @@ func (a *activator) activate(
 		appActivation *appActivation
 		err           error
 	)
-	switch app.kind {
+	switch app.Kind {
 	case appKindDeployment:
 		appActivation, err = a.activateDeployment(ctx, app)
 	case appKindStatefulSet:
 		appActivation, err = a.activateStatefulSet(ctx, app)
 	default:
-		return nil, fmt.Errorf("invalid app kind %s", app.kind)
+		return nil, fmt.Errorf("invalid app kind %s", app.Kind)
 	}
 	if err != nil {
 		errs = multierror.Append(errs, err)
@@ -58,10 +58,10 @@ func (a *activator) activateDeployment(
 	ctx context.Context,
 	app *app,
 ) (*appActivation, error) {
-	deploymentsClient := a.kubeClient.AppsV1().Deployments(app.namespace)
+	deploymentsClient := a.kubeClient.AppsV1().Deployments(app.Namespace)
 	deployment, err := deploymentsClient.Get(
 		ctx,
-		app.name,
+		app.Name,
 		metav1.GetOptions{},
 	)
 	if err != nil {
@@ -74,8 +74,8 @@ func (a *activator) activateDeployment(
 	}
 	glog.Infof(
 		"Activating deployment %s in namespace %s",
-		app.name,
-		app.namespace,
+		app.Name,
+		app.Namespace,
 	)
 	go da.watchForCompletion(
 		a.kubeClient,
@@ -97,7 +97,7 @@ func (a *activator) activateDeployment(
 	patchesBytes, _ := json.Marshal(patches)
 	_, err = deploymentsClient.Patch(
 		ctx,
-		app.name,
+		app.Name,
 		k8s_types.JSONPatchType,
 		patchesBytes,
 		metav1.PatchOptions{},
@@ -109,10 +109,10 @@ func (a *activator) activateStatefulSet(
 	ctx context.Context,
 	app *app,
 ) (*appActivation, error) {
-	statefulSetsClient := a.kubeClient.AppsV1().StatefulSets(app.namespace)
+	statefulSetsClient := a.kubeClient.AppsV1().StatefulSets(app.Namespace)
 	statefulSet, err := statefulSetsClient.Get(
 		ctx,
-		app.name,
+		app.Name,
 		metav1.GetOptions{},
 	)
 	if err != nil {
@@ -125,8 +125,8 @@ func (a *activator) activateStatefulSet(
 	}
 	glog.Infof(
 		"Activating statefulSet %s in namespace %s",
-		app.name,
-		app.namespace,
+		app.Name,
+		app.Namespace,
 	)
 	go da.watchForCompletion(
 		a.kubeClient,
@@ -148,7 +148,7 @@ func (a *activator) activateStatefulSet(
 	patchesBytes, _ := json.Marshal(patches)
 	_, err = statefulSetsClient.Patch(
 		ctx,
-		app.name,
+		app.Name,
 		k8s_types.JSONPatchType,
 		patchesBytes,
 		metav1.PatchOptions{},

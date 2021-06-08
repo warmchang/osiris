@@ -1,15 +1,20 @@
 package controller
 
-import "github.com/kelseyhightower/envconfig"
+import (
+	"time"
+
+	"github.com/kelseyhightower/envconfig"
+)
 
 const envconfigPrefix = "OSIRIS_ENDPOINTS_CONTROLLER"
 
 // Config represents configuration options for the Osiris endpoints controller
 // nolint: lll
 type Config struct {
-	OsirisNamespace                string `envconfig:"OSIRIS_NAMESPACE" required:"true"`
-	ActivatorPodLabelSelectorKey   string `envconfig:"ACTIVATOR_POD_LABEL_SELECTOR_KEY" required:"true"`
-	ActivatorPodLabelSelectorValue string `envconfig:"ACTIVATOR_POD_LABEL_SELECTOR_VALUE" required:"true"`
+	OsirisNamespace                string        `envconfig:"OSIRIS_NAMESPACE" required:"true"`
+	ActivatorPodLabelSelectorKey   string        `envconfig:"ACTIVATOR_POD_LABEL_SELECTOR_KEY" required:"true"`
+	ActivatorPodLabelSelectorValue string        `envconfig:"ACTIVATOR_POD_LABEL_SELECTOR_VALUE" required:"true"`
+	ResyncInterval                 time.Duration `envconfig:"INFORMERS_RESYNC_INTERVAL" required:"true"`
 }
 
 // NewConfigWithDefaults returns a Config object with default values already

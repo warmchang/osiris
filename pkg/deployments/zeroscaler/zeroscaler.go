@@ -43,12 +43,14 @@ func NewZeroscaler(cfg Config, kubeClient kubernetes.Interface) Zeroscaler {
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			cfg.ResyncInterval,
 		),
 		statefulSetsInformer: k8s.StatefulSetsIndexInformer(
 			kubeClient,
 			metav1.NamespaceAll,
 			nil,
 			nil,
+			cfg.ResyncInterval,
 		),
 		collectors: map[string]*metricsCollector{},
 	}
@@ -235,12 +237,13 @@ func (z *zeroscaler) ensureMetricsCollection(kind, namespace, name string,
 	defer z.collectorsLock.Unlock()
 	key := getKey(kind, namespace, name)
 	config := metricsCollectorConfig{
-		appKind:              kind,
-		appName:              name,
-		appNamespace:         namespace,
-		selector:             labels.SelectorFromSet(labelSelector.MatchLabels),
-		scraperConfig:        getMetricsScraperConfig(kind, name, annotations),
-		metricsCheckInterval: z.getMetricsCheckInterval(kind, name, annotations),
+		appKind:                 kind,
+		appName:                 name,
+		appNamespace:            namespace,
+		selector:                labels.SelectorFromSet(labelSelector.MatchLabels),
+		scraperConfig:           getMetricsScraperConfig(kind, name, annotations),
+		metricsCheckInterval:    z.getMetricsCheckInterval(kind, name, annotations),
+		informerRefreshInterval: z.cfg.ResyncInterval,
 	}
 	if collector, ok := z.collectors[key]; !ok ||
 		!reflect.DeepEqual(config, collector.config) {

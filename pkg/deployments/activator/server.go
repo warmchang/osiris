@@ -8,7 +8,7 @@ import (
 	"github.com/golang/glog"
 )
 
-func (a *activator) runServer(ctx context.Context) error {
+func (a *activator) runServer(ctx context.Context, srv *http.Server) error {
 	doneCh := make(chan struct{})
 
 	go func() {
@@ -21,17 +21,12 @@ func (a *activator) runServer(ctx context.Context) error {
 				time.Second*5,
 			)
 			defer cancel()
-			a.srv.Shutdown(shutdownCtx) // nolint: errcheck
+			srv.Shutdown(shutdownCtx) // nolint: errcheck
 		case <-doneCh: // The server shut down on its own, perhaps due to error
 		}
 	}()
 
-	glog.Infof(
-		"Activator server is listening on %s, proxying all deactivated, "+
-			"Osiris-enabled applications",
-		a.srv.Addr,
-	)
-	err := a.srv.ListenAndServe()
+	err := srv.ListenAndServe()
 	if err == http.ErrServerClosed {
 		err = nil
 	}
