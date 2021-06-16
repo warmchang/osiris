@@ -19,6 +19,7 @@ type appActivation struct {
 	readyAppPodIPs map[string]struct{}
 	endpoints      *corev1.Endpoints
 	lock           sync.Mutex
+	done           bool
 	successCh      chan struct{}
 	timeoutCh      chan struct{}
 	dependencies   []*appActivation
@@ -119,7 +120,10 @@ func (a *appActivation) checkActivationComplete() {
 			for _, address := range subset.Addresses {
 				if _, ok := a.readyAppPodIPs[address.IP]; ok {
 					glog.Infof("App pod with ip %s is in service", address.IP)
-					close(a.successCh)
+					if !a.done {
+						close(a.successCh)
+						a.done = true
+					}
 					return
 				}
 			}
