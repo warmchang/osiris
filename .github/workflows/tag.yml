@@ -17,10 +17,8 @@ jobs:
           token: ${{ secrets.DM_BOT_TOKEN }}
       - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
-      - name: Tag
-        uses: ./.github/actions/autotag/
-      - name: Push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.DM_BOT_TOKEN }}
-          tags: true
+      - name: tag
+        uses: jenkins-x-plugins/jx-release-version@v2.4.9
+        env:
+          TAG: "true"
+          GIT_TOKEN: ${{ secrets.DM_BOT_TOKEN }}
