@@ -35,7 +35,7 @@ type activator struct {
 	appsByHost           map[string]*app
 	indicesLock          sync.RWMutex
 	appActivations       map[string]*appActivation
-	appActivationsLock   sync.Mutex
+	appActivationsLock   sync.RWMutex
 	appActivationTimeout time.Duration
 	srv                  *http.Server
 	internalSrv          *http.Server
