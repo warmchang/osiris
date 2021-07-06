@@ -40,7 +40,9 @@ func (a *activator) handleRequest(
 	// Are we already activating the deployment/statefulset in question?
 	var err error
 	appKey := getKey(app.Namespace, app.Kind, app.Name)
+	a.appActivationsLock.RLock()
 	appActivation, ok := a.appActivations[appKey]
+	a.appActivationsLock.RUnlock()
 	if ok {
 		glog.Infof(
 			"Found activation in-progress for %s %s in namespace %s",
