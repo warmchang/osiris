@@ -35,7 +35,7 @@ type controller struct {
 	readyActivatorPodsLock sync.Mutex
 	servicesInformer       cache.SharedIndexInformer
 	managers               map[string]*endpointsManager
-	managersLock           sync.Mutex
+	managersLock           sync.RWMutex
 	ctx                    context.Context
 }
 
@@ -226,6 +226,8 @@ func (c *controller) syncActivatorPod(obj interface{}) {
 		"%d pods ready for activator",
 		len(c.readyActivatorPods),
 	)
+	c.managersLock.RLock()
+	defer c.managersLock.RUnlock()
 	for _, mgr := range c.managers {
 		func() {
 			mgr.readyAppPodsLock.Lock()
