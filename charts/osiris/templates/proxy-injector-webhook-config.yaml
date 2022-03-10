@@ -5,6 +5,8 @@
 {{- $altName3 := printf "%s-proxy-injector.%s.svc.cluster" (include "osiris.fullname" .) .Release.Namespace }}
 {{- $altName4 := printf "%s-proxy-injector.%s.svc.cluster.local" (include "osiris.fullname" .) .Release.Namespace }}
 {{- $cert := genSignedCert $cn nil (list $altName1 $altName2 $altName3 $altName4) 3650 $ca }}
+
+{{- if not (.Values.certmanager.enabled) -}}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -17,6 +19,7 @@ metadata:
 data:
   tls.crt: {{ b64enc $cert.Cert }}
   tls.key: {{ b64enc $cert.Key }}
+{{- end }}
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
@@ -27,6 +30,10 @@ metadata:
     helm.sh/chart: {{ include "osiris.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+  {{- if .Values.certmanager.enabled }}
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ include "osiris.fullname" . }}-proxy-injector-cert
+  {{- end }}
 webhooks:
 - name: proxy-injector.osiris.dm.gg
   clientConfig:
@@ -34,7 +41,9 @@ webhooks:
       namespace: {{ .Release.Namespace }}
       name: {{ include "osiris.fullname" . }}-proxy-injector
       path: "/mutate"
+    {{- if not (.Values.certmanager.enabled) }}
     caBundle: {{ b64enc $ca.Cert }}
+    {{- end }}
   rules:
   - apiGroups:
     - ""

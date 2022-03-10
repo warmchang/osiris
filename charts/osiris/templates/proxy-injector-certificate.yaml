@@ -1,0 +1,22 @@
+{{- if .Values.certmanager.enabled -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "osiris.fullname" . }}-proxy-injector-cert
+  labels:
+    app.kubernetes.io/name: {{ include "osiris.name" . }}-proxy-injector
+    helm.sh/chart: {{ include "osiris.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  commonName: {{ include "osiris.fullname" . }}-proxy-injector-cert
+  dnsNames:
+    - {{ include "osiris.fullname" . }}-proxy-injector.{{ .Release.Namespace }}
+    - {{ include "osiris.fullname" . }}-proxy-injector.{{ .Release.Namespace }}.svc
+    - {{ include "osiris.fullname" . }}-proxy-injector.{{ .Release.Namespace }}.svc.cluster
+    - {{ include "osiris.fullname" . }}-proxy-injector.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: {{ include "osiris.fullname" . }}-selfsigned-issuer
+  secretName: {{ include "osiris.fullname" . }}-proxy-injector-cert
+{{- end }}

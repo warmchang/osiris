@@ -113,3 +113,8 @@ endpointsHijacker:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+certmanager:
+    # -- Enables cert-manager to automatically issue selfSigned certificates
+    # to proxyInjector and endpointsHijacker Webhooks 
+  enabled: false
