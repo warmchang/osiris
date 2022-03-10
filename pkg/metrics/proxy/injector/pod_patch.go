@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	"k8s.io/api/admission/v1beta1"
+	admissionsv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
@@ -20,7 +20,7 @@ const (
 )
 
 func (i *injector) getPodPatchOperations(
-	ar *v1beta1.AdmissionReview,
+	ar *admissionsv1.AdmissionReview,
 ) ([]kubernetes.PatchOperation, error) {
 	req := ar.Request
 	var pod corev1.Pod
